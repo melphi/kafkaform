@@ -76,7 +76,7 @@ class State:
         # TODO Connector checks for connector plugins
         # TODO Stream and Table checks for UDFs
         pass
-    
+
     def _ordered_delta(self, delta: model.Delta) -> model.Delta:
         # TODO Check ordering
         #  - Connectors first
