@@ -1,0 +1,19 @@
+{%- macro source_csv_base() -%}
+      connector.class: "com.github.jcustenborder.kafka.connect.spooldir.SpoolDirCsvSourceConnector"
+      key.converter: "org.apache.kafka.connect.storage.StringConverter"
+      value.converter: "io.confluent.connect.avro.AvroConverter"
+      use.latest.version: "true"
+      errors.log.enable: "true"
+      tasks.max: 1
+      file.minimum.age.ms: 60000
+      csv.case.sensitive.field.names: "false"
+      errors.log.include.messages: "true"
+      behavior.on.error: "LOG"
+      empty.poll.wait.ms: "60000"
+{%- endmacro -%}
+
+{%- macro stream_partitions(partitions, replicas) -%}
+PARTITIONS={{ partitions }}, REPLICAS={{ replicas }}
+{%- endmacro -%}
+
+{% include 'include.yml' %}

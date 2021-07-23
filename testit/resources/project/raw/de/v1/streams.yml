@@ -1,0 +1,4 @@
+streams:
+  - name: "refined__stream__gdp__user__v1"
+    sql: "CREATE STREAM refined__stream__gdp__user__v1 (userid VARCHAR KEY, regionid VARCHAR)
+          WITH (KAFKA_TOPIC='raw__source__gdp__user__v1', PARTITIONS=2, REPLICAS=1, VALUE_FORMAT='AVRO');"

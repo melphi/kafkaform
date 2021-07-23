@@ -1,0 +1,9 @@
+sources:
+  - name: "source_1"
+    config:
+      {{ source_csv_base() }}
+
+streams:
+  - name: "stream_1"
+    sql: "CREATE STREAM pageviews (viewtime BIGINT, userid VARCHAR, pageid VARCHAR)
+          WITH (KAFKA_TOPIC='pageviews', VALUE_FORMAT='AVRO', {{ stream_partitions(3, 2) }});"

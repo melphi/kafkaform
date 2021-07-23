@@ -1,0 +1,31 @@
+sources:
+  - name: "raw__source__gdp__s_cim_policy__v1"
+    config:
+      connector.class: "io.confluent.connect.hdfs.HdfsSinkConnector"
+      tasks.max: "10"
+      topics: "raw__source__gdp__s_cim_policy__v1"
+      hdfs.url: "hdfs://fakehost:9000"
+      hadoop.conf.dir: "/opt/hadoop/conf"
+      hadoop.home: "/opt/hadoop"
+      flush.size: "100"
+      rotate.interval.ms: "1000"
+
+tables:
+  - name: "raw_pageviews_table"
+    sql: "CREATE TABLE pageviews (viewtime BIGINT, userid VARCHAR, pageid VARCHAR)
+          WITH (KAFKA_TOPIC='pageviews', VALUE_FORMAT='AVRO');"
+    schema: "schema_pageviews"
+
+streams:
+  - name: "raw_pageviews_stream"
+    sql: "CREATE STREAM pageviews (viewtime BIGINT, userid VARCHAR, pageid VARCHAR)
+          WITH (KAFKA_TOPIC='pageviews', VALUE_FORMAT='AVRO');"
+    schema: "schema_pageviews"
+
+schemas:
+  - name: "schema_pageviews"
+    fields:
+      - name: "viewtime"
+        type: "BIGINT"
+      - name: "viewtime"
+        type: "VARCHAR"

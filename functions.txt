@@ -1,0 +1,510 @@
+[
+  {
+    "@type": "function_names",
+    "statementText": "LIST FUNCTIONS;",
+    "functions": [
+      {
+        "name": "ARRAY_UNION",
+        "type": "SCALAR"
+      },
+      {
+        "name": "GENERATE_SERIES",
+        "type": "SCALAR"
+      },
+      {
+        "name": "TIMESTAMPTOSTRING",
+        "type": "SCALAR"
+      },
+      {
+        "name": "LN",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ARRAY_MAX",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ARRAY_SORT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "LPAD",
+        "type": "SCALAR"
+      },
+      {
+        "name": "TRIM",
+        "type": "SCALAR"
+      },
+      {
+        "name": "UNIX_DATE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "MAP_KEYS",
+        "type": "SCALAR"
+      },
+      {
+        "name": "SQRT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "SUBSTRING",
+        "type": "SCALAR"
+      },
+      {
+        "name": "RETURNDECIMAL",
+        "type": "SCALAR"
+      },
+      {
+        "name": "AS_MAP",
+        "type": "SCALAR"
+      },
+      {
+        "name": "UNIX_TIMESTAMP",
+        "type": "SCALAR"
+      },
+      {
+        "name": "STRINGTODATE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "GEO_DISTANCE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "CHR",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ELT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "BAD_UDF",
+        "type": "SCALAR"
+      },
+      {
+        "name": "CONFIGURABLEUDF",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ARRAY_MIN",
+        "type": "SCALAR"
+      },
+      {
+        "name": "FLOOR",
+        "type": "SCALAR"
+      },
+      {
+        "name": "COALESCE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ARRAY_JOIN",
+        "type": "SCALAR"
+      },
+      {
+        "name": "URL_DECODE_PARAM",
+        "type": "SCALAR"
+      },
+      {
+        "name": "STRINGTOTIMESTAMP",
+        "type": "SCALAR"
+      },
+      {
+        "name": "CEIL",
+        "type": "SCALAR"
+      },
+      {
+        "name": "SIGN",
+        "type": "SCALAR"
+      },
+      {
+        "name": "REPLACE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "UUID",
+        "type": "SCALAR"
+      },
+      {
+        "name": "COMPLEXFUNCTION",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ENTRIES",
+        "type": "SCALAR"
+      },
+      {
+        "name": "REGEXP_REPLACE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "KSQLSTRUCTUDF",
+        "type": "SCALAR"
+      },
+      {
+        "name": "FIELD",
+        "type": "SCALAR"
+      },
+      {
+        "name": "REGEXP_EXTRACT_ALL",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ARRAY_LENGTH",
+        "type": "SCALAR"
+      },
+      {
+        "name": "LCASE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "IFNULL",
+        "type": "SCALAR"
+      },
+      {
+        "name": "TEST_UDF",
+        "type": "SCALAR"
+      },
+      {
+        "name": "MAP_VALUES",
+        "type": "SCALAR"
+      },
+      {
+        "name": "DECIMALSTRUCT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "REGEXP_SPLIT_TO_ARRAY",
+        "type": "SCALAR"
+      },
+      {
+        "name": "MASK_LEFT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "WHENRESULT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "URL_EXTRACT_FRAGMENT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ENCODE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "WHENCONDITION",
+        "type": "SCALAR"
+      },
+      {
+        "name": "EXTRACTJSONFIELD",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ROUND",
+        "type": "SCALAR"
+      },
+      {
+        "name": "CONCAT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "SLICE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "MASK_RIGHT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "RPAD",
+        "type": "SCALAR"
+      },
+      {
+        "name": "UCASE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "URL_EXTRACT_PARAMETER",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ARRAY_DISTINCT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "JSON_ARRAY_CONTAINS",
+        "type": "SCALAR"
+      },
+      {
+        "name": "AS_VALUE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "SPLIT_TO_MAP",
+        "type": "SCALAR"
+      },
+      {
+        "name": "SPLIT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "URL_EXTRACT_QUERY",
+        "type": "SCALAR"
+      },
+      {
+        "name": "INITCAP",
+        "type": "SCALAR"
+      },
+      {
+        "name": "MAP_UNION",
+        "type": "SCALAR"
+      },
+      {
+        "name": "MASK",
+        "type": "SCALAR"
+      },
+      {
+        "name": "RETURNINCOMPATIBLE",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ABS",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ARRAY_INTERSECT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "DATETOSTRING",
+        "type": "SCALAR"
+      },
+      {
+        "name": "URL_EXTRACT_PORT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "REGEXP_EXTRACT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "URL_ENCODE_PARAM",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ARRAY_CONTAINS",
+        "type": "SCALAR"
+      },
+      {
+        "name": "INSTR",
+        "type": "SCALAR"
+      },
+      {
+        "name": "URL_EXTRACT_HOST",
+        "type": "SCALAR"
+      },
+      {
+        "name": "URL_EXTRACT_PATH",
+        "type": "SCALAR"
+      },
+      {
+        "name": "RANDOM",
+        "type": "SCALAR"
+      },
+      {
+        "name": "SOMEFUNCTION",
+        "type": "SCALAR"
+      },
+      {
+        "name": "E2ECONFIGURABLEUDF",
+        "type": "SCALAR"
+      },
+      {
+        "name": "ARRAY_EXCEPT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "URL_EXTRACT_PROTOCOL",
+        "type": "SCALAR"
+      },
+      {
+        "name": "MASK_KEEP_LEFT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "LEN",
+        "type": "SCALAR"
+      },
+      {
+        "name": "MASK_KEEP_RIGHT",
+        "type": "SCALAR"
+      },
+      {
+        "name": "CONCAT_WS",
+        "type": "SCALAR"
+      },
+      {
+        "name": "EXP",
+        "type": "SCALAR"
+      },
+      {
+        "name": "EXPLODE",
+        "type": "TABLE"
+      },
+      {
+        "name": "THROWING_UDTF",
+        "type": "TABLE"
+      },
+      {
+        "name": "CUBE_EXPLODE",
+        "type": "TABLE"
+      },
+      {
+        "name": "TEST_UDTF",
+        "type": "TABLE"
+      },
+      {
+        "name": "SUM_LIST",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "MAX",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "TEST_UDAF",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "EARLIEST_BY_OFFSET",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "LATEST_BY_OFFSET",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "HISTOGRAM",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "SUM",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "TOPKDISTINCT",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "COLLECT_LIST",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "COLLECT_SET",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "TOPK",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "AVG",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "COUNT_DISTINCT",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "MIN",
+        "type": "AGGREGATE"
+      },
+      {
+        "name": "COUNT",
+        "type": "AGGREGATE"
+      }
+    ],
+    "warnings": []
+  }
+]
+
+
+[
+  {
+    "@type": "describe_function",
+    "statementText": "DESCRIBE FUNCTION SUM;",
+    "name": "SUM",
+    "description": "",
+    "author": "Confluent",
+    "version": "",
+    "path": "internal",
+    "functions": [
+      {
+        "arguments": [
+          {
+            "name": "val",
+            "type": "INT",
+            "description": "",
+            "isVariadic": false
+          }
+        ],
+        "returnType": "INT",
+        "description": "Computes the sum for a key.",
+        "argumentTypes": [
+          "INT"
+        ]
+      },
+      {
+        "arguments": [
+          {
+            "name": "val",
+            "type": "BIGINT",
+            "description": "",
+            "isVariadic": false
+          }
+        ],
+        "returnType": "BIGINT",
+        "description": "Computes the sum for a key.",
+        "argumentTypes": [
+          "BIGINT"
+        ]
+      },
+      {
+        "arguments": [
+          {
+            "name": "val",
+            "type": "DOUBLE",
+            "description": "",
+            "isVariadic": false
+          }
+        ],
+        "returnType": "DOUBLE",
+        "description": "Computes the sum for a key.",
+        "argumentTypes": [
+          "DOUBLE"
+        ]
+      },
+      {
+        "arguments": [
+          {
+            "name": "val",
+            "type": "DECIMAL",
+            "description": "",
+            "isVariadic": false
+          }
+        ],
+        "returnType": "DECIMAL",
+        "description": "Computes the sum of decimal values for a key, resulting in a decimal with the same precision and scale.",
+        "argumentTypes": [
+          "DECIMAL"
+        ]
+      }
+    ],
+    "type": "AGGREGATE",
+    "warnings": []
+  }
+]

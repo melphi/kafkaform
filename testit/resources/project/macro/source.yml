@@ -1,0 +1,5 @@
+{% macro source_datagen_base() -%}
+      connector.class: "io.confluent.kafka.connect.datagen.DatagenConnector"
+      key.converter: "org.apache.kafka.connect.storage.StringConverter"
+      max.interval: 1000
+{%- endmacro %}

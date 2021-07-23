@@ -1,0 +1,2 @@
+mypy==0.910             # Type checking
+testcontainers==3.4.1   # Integration testing

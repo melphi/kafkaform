@@ -1,0 +1,5 @@
+Jinja2==3.0.1           # Templates engine
+jsonschema==3.2.0       # Schema validation
+kafka-python==2.0.2     # Kafka client
+PyYAML==5.4.1           # Yaml parsing
+requests==2.26.0        # Kafka API requests
