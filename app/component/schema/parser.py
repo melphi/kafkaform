@@ -1,3 +1,4 @@
+from typing import List
 import dataclasses
 
 from app.component import component
@@ -35,20 +36,23 @@ class SchemaParser(component.Parser):
             }
         }
 
-    def parse(self, item: dict) -> model.SpecItem:
-        fields = list()
-        if item.get("fields"):
-            assert isinstance(item["fields"], list), "Fields should be a list of values"
-            for field in item["fields"]:
-                fields.append(model.FieldSchema(
-                    name=field.get("name"),
-                    type=field.get("type")))
-        params = model.SchemaParams(fields=fields)
-        return model.SpecItem(
-            name=item.get("name"),
-            schema_name=item.get("name"),
-            resource_type=model.RESOURCE_SCHEMA,
-            params=dataclasses.asdict(params))
+    def parse(self, block: dict) -> List[model.SpecItem]:
+        specs = list()
+        for item in block[self.tag_name()]:
+            fields = list()
+            if item.get("fields"):
+                assert isinstance(item["fields"], list), "Fields should be a list of values"
+                for field in item["fields"]:
+                    fields.append(model.FieldSchema(
+                        name=field.get("name"),
+                        type=field.get("type")))
+            params = model.SchemaParams(fields=fields)
+            specs.append(model.SpecItem(
+                name=item.get("name"),
+                schema_name=item.get("name"),
+                resource_type=model.RESOURCE_SCHEMA,
+                params=dataclasses.asdict(params)))
+        return specs
 
     def _parse_type(self, type_name: str) -> model.FieldType:
         assert type_name, "Missing field type value"

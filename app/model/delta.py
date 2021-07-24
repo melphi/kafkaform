@@ -6,7 +6,7 @@ from app.model import spec
 
 @dataclass
 class DeltaItem:
-    type: str
+    resource_type: str
     deleted: bool
     current: Optional[spec.SpecItem]
     target: Optional[spec.SpecItem]

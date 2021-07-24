@@ -2,27 +2,29 @@ import logging
 from typing import Dict, List
 
 from app import component, model
+from app.actioner import validate
+
+# HERE I AM, TEST AND MAKE IT RUN
 
 
-class State:
+class Resolver:
+    """Resolves system delta, validates system configuration."""
+
     _LOG = logging.getLogger(__name__)
 
-    def __init__(self, components: List[component.Component]):
-        self._components_map: Dict[str, component.Component] = {}
-        for comp in components:
-            assert comp.resource_type not in self._components_map, \
-                f"Component for resource [{comp.resource_type}] already exists"
-            self._components_map[comp.resource_type] = comp
+    def __init__(self, resolvers_map: Dict[str, component.Resolver]):
+        self._resolvers_map = resolvers_map
+        self._validators = [validate.NameConventionValidator(), validate.NameUniquenessValidator()]
 
     def load_current(self) -> model.Spec:
         spec = model.Spec(specs=[])
-        for comp in self._components_map.values():
-            for name in comp.resolver.system_list():
-                spec.specs.append(comp.resolver.system_get(name))
+        for resolver in self._resolvers_map.values():
+            for name in resolver.system_list():
+                spec.specs.append(resolver.system_get(name))
         return spec
 
     def load_delta(self, target: model.Spec) -> model.Delta:
-        self._check_naming(target)
+        self._validate_target(target)
 
         descriptions = self._get_descriptions(target)
         self._check_schema(target, descriptions)
@@ -31,22 +33,23 @@ class State:
         delta = self._build_delta(current, target)
 
         self._check_dependencies(target)
-        return self._ordered_delta(delta)
+        self._order_delta(delta)
+        return delta
 
     def _get_descriptions(self, target: model.Spec) -> List[model.Description]:
         descriptions = list()
         for spec in target.specs:
             try:
-                description = self._components_map[spec.resource_type].resolver.describe(spec)
+                description = self._resolvers_map[spec.resource_type].describe(spec)
                 descriptions.append(description)
             except Exception as e:
                 raise ValueError(f"Could not describe resource [{spec.full_name()}]: {str(e)}")
         return descriptions
 
-    def _check_naming(self, target: model.Spec) -> None:
-        # TODO: Check naming convention
-        # TODO: Check naming uniqueness
-        pass
+    def _validate_target(self, target: model.Spec) -> None:
+        # TODO: Review how validator works. Ideally they can be extended and disabled from configuration.
+        for validator in self._validators:
+            validator.validate(target)
 
     def _check_schema(self, target: model.Spec, descriptions: List[model.Description]) -> None:
         schemas = self._load_schemas(target)
@@ -64,11 +67,11 @@ class State:
         schemas: Dict[str, model.SchemaParams] = {}
         for spec in target.specs:
             if spec.resource_type == model.RESOURCE_SCHEMA:
-                resolved = self._components_map[model.RESOURCE_SCHEMA].resolver.system_get(spec.name)
+                resolved = self._resolvers_map[model.RESOURCE_SCHEMA].system_get(spec.name)
                 if resolved:
-                    described = self._components_map[model.RESOURCE_SCHEMA].resolver.describe(resolved)
+                    described = self._resolvers_map[model.RESOURCE_SCHEMA].describe(resolved)
                 else:
-                    described = self._components_map[model.RESOURCE_SCHEMA].resolver.describe(spec)
+                    described = self._resolvers_map[model.RESOURCE_SCHEMA].describe(spec)
                 schemas[spec.name] = described.schema
         return schemas
 
@@ -77,12 +80,21 @@ class State:
         # TODO Stream and Table checks for UDFs
         pass
 
-    def _ordered_delta(self, delta: model.Delta) -> model.Delta:
-        # TODO Check ordering
-        #  - Connectors first
-        #  - For now, tables and then stream. Later stream and tables use a queue for dependencies
-        #  - Sink last
-        pass
+    def _order_delta(self, delta: model.Delta) -> None:
+        orders = {
+            model.RESOURCE_SCHEMA: 1,
+            model.RESOURCE_SOURCE: 2,
+            model.RESOURCE_TABLE: 3,
+            model.RESOURCE_STREAM: 4,
+            model.RESOURCE_SINK: 5
+        }
+        tuples = list()
+        for item in delta.items:
+            pos = orders.get(item.resource_type)
+            assert pos, f"Order position not defined for {item.resource_type}"
+            tuples.append((pos, item))
+        tuples = sorted(tuples, key=lambda x: x[0])
+        delta.items = [item[1] for item in tuples]
 
     def _build_delta(self, current: model.Spec, target: model.Spec) -> model.Delta:
         # System can have multiple items with the same name but different types.
@@ -99,12 +111,12 @@ class State:
             for current_item in current_map.get(target_spec.name):
                 if current_item.resource_type == target_spec.resource_type:
                     found = True
-                    resolver = self._components_map[target_spec.resource_type].resolver
+                    resolver = self._resolvers_map[target_spec.resource_type]
                     if resolver.equals(current_item, target_spec):
                         self._LOG.info(f"{target_spec.resource_type} [{target_spec.name}] changes")
                         delta.items.append(model.DeltaItem(
                             deleted=False,
-                            type=target_spec.resource_type,
+                            resource_type=target_spec.resource_type,
                             current=current_item,
                             target=target_spec))
                     else:
@@ -113,7 +125,7 @@ class State:
                 self._LOG.info(f"{target_spec.resource_type} [{target_spec.name}] is new")
                 delta.items.append(model.DeltaItem(
                     deleted=False,
-                    type=target_spec.resource_type,
+                    resource_type=target_spec.resource_type,
                     current=None,
                     target=target_spec))
         return delta

@@ -5,17 +5,21 @@ from app import model
 
 
 class Parser:
+    """Parsers specification files"""
+
     def tag_name(self) -> str:
         raise NotImplementedError()
 
     def schema(self) -> dict:
         raise NotImplementedError()
 
-    def parse(self, item: dict) -> model.SpecItem:
+    def parse(self, block: dict) -> List[model.SpecItem]:
         raise NotImplementedError()
 
 
 class Resolver:
+    """Resolves resources current state"""
+
     def describe(self, target: model.SpecItem) -> model.Description:
         raise NotImplementedError()
 
@@ -31,7 +35,9 @@ class Resolver:
         raise NotImplementedError()
 
 
-class Actioner:
+class Transitioner:
+    """Performs state transitions."""
+
     def apply(self, delta: model.DeltaItem) -> None:
         raise NotImplementedError()
 
@@ -41,4 +47,4 @@ class Component:
     resource_type: str
     parser: Parser
     resolver: Resolver
-    actioner: Actioner
+    transitioner: Transitioner

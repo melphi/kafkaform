@@ -7,7 +7,7 @@ from test.resources import dto
 class TestNamingConventionValidator(unittest.TestCase):
     def test_valid(self):
         # Given
-        validator = validate.NamingConventionValidator()
+        validator = validate.NameConventionValidator()
         target_source = spec.SourceSpec(name="raw__source__gdp__s_cim_policy__v1", config={})
         target_stream = spec.StreamSpec(name="raw__stream__gdp__s_cim_policy__v1", sql="", schema=None)
         target_table = spec.TableSpec(name="raw__table__gdp__s_cim_policy__v1", sql="", schema=None)
@@ -26,7 +26,7 @@ class TestNamingConventionValidator(unittest.TestCase):
         # TODO: Parametrize test to check streams, tables, sinks.
 
         # Given
-        validator = validate.NamingConventionValidator()
+        validator = validate.NameConventionValidator()
         target_source = spec.SourceSpec(name="test__invalid", config={})
         delta = dto.create_delta(target_source=target_source)
 
