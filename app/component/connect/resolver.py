@@ -1,3 +1,4 @@
+import dataclasses
 from typing import Optional, List
 
 from app import model
@@ -44,6 +45,7 @@ class BaseConnectResolver(component.Resolver):
         raise NotImplementedError()
 
 
+# TODO: Return list of connector classes.
 class ConnectorClassResolver(component.Resolver):
     def describe(self, target: model.SpecItem) -> model.Description:
         raise NotImplementedError()

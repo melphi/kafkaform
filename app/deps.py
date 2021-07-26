@@ -8,13 +8,13 @@ class Dependencies:
     """Initialises application dependencies based on configuration"""
 
     def __init__(self, cfg: conf.Config):
-        self.connect_client = client.ConnectClientImpl(connect_url=cfg.kafka_connect_url)
-        self.ksql_client = client.KsqlClientImpl(ksql_url=cfg.kafka_ksql_url)
+        self._connect_client = client.ConnectClientImpl(connect_url=cfg.kafka_connect_url)
+        self._ksql_client = client.KsqlClientImpl(ksql_url=cfg.kafka_ksql_url)
 
         components = self._create_components()
 
-        parsers = [comp.parser for comp in components if comp.parser]
-        self.parser = actioner.Parser(parsers=parsers)
+        parsers_map = {comp.resource_type: comp.parser for comp in components if comp.parser}
+        self.parser = actioner.Parser(parsers_map=parsers_map)
 
         resolvers_map = {comp.resource_type: comp.resolver for comp in components if comp.resolver}
         self.resolver = actioner.Resolver(resolvers_map=resolvers_map)
@@ -24,8 +24,8 @@ class Dependencies:
 
     def _create_components(self) -> List[component.Component]:
         components = registered.build_all(
-            connect_client=self.connect_client,
-            ksql_client=self.ksql_client)
+            connect_client=self._connect_client,
+            ksql_client=self._ksql_client)
 
         names = [comp.resource_type for comp in components]
         assert len(components) == len(set(names)), \

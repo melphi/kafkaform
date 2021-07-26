@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, IO, List
 
 import os
 import jinja2
@@ -11,8 +11,9 @@ from app.component import component
 
 # TODO: Parse repeated tags.
 class Parser:
-    def __init__(self, *, parsers: List[component.Parser]):
-        self._parsers_map: Dict[str, component.Parser] = {parser.tag_name(): parser for parser in parsers}
+    def __init__(self, *, parsers_map: Dict[str, component.Parser]):
+        self._parsers_by_type = parsers_map
+        self._parsers_by_tag = {parser.tag_name(): parser for parser in parsers_map.values()}
 
     def render(self, file_path: str) -> str:
         """Renders jinja2 template file into a string"""
@@ -36,8 +37,7 @@ class Parser:
 
     def parse(self, file_name: str) -> model.Spec:
         """
-        Parses the file name into a specification object.
-        Supports Jinja2 template format for input files.
+        Parses the definitions file. Supports Jinja2 template tags.
         """
 
         try:
@@ -47,6 +47,21 @@ class Parser:
             return self._build_spec(doc)
         except Exception as e:
             raise ValueError(f"Error while parsing file [{file_name}]: {str(e)}")
+
+    def save(self, *, data: model.Spec, target: IO) -> None:
+        """
+        Saves the model into a definition file.
+        """
+
+        values: Dict[str, List] = {}
+        for spec in data.specs:
+            parser = self._parsers_by_type.get(spec.resource_type)
+            if parser:
+                if parser.tag_name() in values:
+                    values[parser.tag_name()].append(spec)
+                else:
+                    values[parser.tag_name()] = [spec]
+        yaml.safe_dump(values, target)
 
     def _check_schema(self, doc: dict) -> None:
         self._check_no_empty_spec(doc)
@@ -60,7 +75,7 @@ class Parser:
     def _build_spec(self, doc: dict) -> model.Spec:
         specs = list()
         for key, val in doc.items():
-            parser = self._parsers_map.get(key)
+            parser = self._parsers_by_type.get(key)
             assert parser, f"Tag {key} does not have any registered parser"
             for spec in parser.parse(val):
                 specs.append(spec)
@@ -74,7 +89,7 @@ class Parser:
 
     def _build_schema(self) -> dict:
         schemas = {}
-        for name, parser in self._parsers_map.items():
+        for name, parser in self._parsers_by_type.items():
             schema = parser.schema()
             assert schema, f"Parser [{name}] did not return any schema."
             schemas[name] = schema

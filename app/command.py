@@ -1,6 +1,6 @@
 import logging
 
-from app import actioner, client
+from app import actioner, client, model
 
 
 class Command:
@@ -14,9 +14,9 @@ class ConfigDebugCommand(Command):
     NAME = "config:debug"
     HELP = "Debug utilities"
 
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: str, parser: actioner.Parser):
         self._file_path = file_path
-        self._parser = actioner.Parser()
+        self._parser = parser
 
     def run(self) -> str:
         rendered = self._parser.render(self._file_path)
@@ -32,28 +32,26 @@ class KafkaApplyCommand(Command):
     _LOG = logging.getLogger(__name__)
 
     def __init__(self, *,
-                 connect_client: client.ConnectClient,
-                 ksql_client: client.KsqlClient,
+                 parser: actioner.Parser,
+                 resolver: actioner.Resolver,
+                 transitioner: actioner.Transitioner,
                  file_path: str,
                  ask_confirmation: bool = True):
-        self._actioner = actioner.Actioner(
-            connect_client=connect_client,
-            ksql_client=ksql_client)
-        self._loader = state.StateLoader(
-            connect_client=connect_client,
-            ksql_client=ksql_client)
+        self._parser = parser
+        self._resolver = resolver
+        self._transitioner = transitioner
         self._file_path = file_path
         self._ask_confirmation = ask_confirmation
 
-    def run(self) -> state.DeltaState:
-        target = spec.PARSER.parse(self._file_path)
-        if target == spec.EMPTY_SPEC:
+    def run(self) -> model.Delta:
+        target = self._parser.parse(self._file_path)
+        if target == model.EMPTY_SPEC:
             raise ValueError("Parsed files do not contain any resource")
-        delta = self._loader.load_system_delta(target)
-        if delta == state.EMPTY_DELTA:
+        delta = self._resolver.load_delta(target)
+        if delta == model.EMPTY_DELTA:
             self._LOG.info("System is up to date")
         else:
-            self._actioner.transit_state(delta, self._ask_confirmation)
+            self._transitioner.transit_state(delta, self._ask_confirmation)
         return delta
 
 
@@ -70,18 +68,17 @@ class KafkaDumpCommand(Command):
     HELP = "Dumps the current state of the system to file"
 
     def __init__(self, *,
-                 connect_client: client.ConnectClient,
-                 ksql_client: client.KsqlClient,
+                 parser: actioner.Parser,
+                 resolver: actioner.Resolver,
                  dest_path: str):
-        self._loader = state.StateLoader(
-            connect_client=connect_client,
-            ksql_client=ksql_client)
+        self._resolver = resolver
+        self._parser = parser
         self._dest_path = dest_path
 
     def run(self) -> None:
         with open(self._dest_path, "w") as target:
-            data = self._loader.load_system_state()
-            spec.PARSER.save(data=data, target=target)
+            data = self._resolver.load_current()
+            self._parser.save(data=data, target=target)
 
 
 class KafkaPlanCommand(Command):
@@ -91,14 +88,13 @@ class KafkaPlanCommand(Command):
     _LOG = logging.getLogger(__name__)
 
     def __init__(self, *,
-                 connect_client: client.ConnectClient,
-                 ksql_client: client.KsqlClient,
+                 parser: actioner.Parser,
+                 resolver: actioner.Resolver,
                  file_path: str):
         self._file_path = file_path
-        self._loader = state.StateLoader(
-            connect_client=connect_client,
-            ksql_client=ksql_client)
+        self._parser = parser
+        self._resolver = resolver
 
-    def run(self) -> state.DeltaState:
-        target = spec.PARSER.parse(self._file_path)
-        return self._loader.load_system_delta(target)
+    def run(self) -> model.Delta:
+        target = self._parser.parse(self._file_path)
+        return self._resolver.load_delta(target)

@@ -14,18 +14,19 @@ def run(argv: list, cfg: conf.Config) -> None:
         command.ConfigDebugCommand(file_path=args.file_path).run()
     elif args.cmd == command.KafkaApplyCommand.NAME:
         command.KafkaApplyCommand(
-            connect_client=dep.connect_client,
-            ksql_client=dep.ksql_client,
+            parser=dep.parser,
+            resolver=dep.resolver,
+            transitioner=dep.transitioner,
             file_path=args.file_path).run()
     elif args.cmd == command.KafkaDumpCommand.NAME:
         command.KafkaDumpCommand(
-            connect_client=dep.connect_client,
-            ksql_client=dep.ksql_client,
+            parser=dep.parser,
+            resolver=dep.resolver,
             dest_path=args.dest_path).run()
     elif args.cmd == command.KafkaPlanCommand.NAME:
         command.KafkaPlanCommand(
-            connect_client=dep.connect_client,
-            ksql_client=dep.ksql_client,
+            parser=dep.parser,
+            resolver=dep.resolver,
             file_path=args.file_path).run()
     else:
         raise ValueError(f"Unmapped command [{args.cmd}]")
