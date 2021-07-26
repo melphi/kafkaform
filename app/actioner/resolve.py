@@ -31,7 +31,7 @@ class Resolver:
         delta = self._build_delta(current, target)
 
         self._check_dependencies(
-            current=current, target=target, descriptions=descriptions)
+            current=current, target_descriptions=descriptions)
         self._order_delta(delta)
         return delta
 
@@ -45,11 +45,11 @@ class Resolver:
                 raise ValueError(f"Could not describe resource [{spec.full_name()}]: {str(e)}")
         return descriptions
 
-    def _validate_target(self, target: model.Spec, descriptions: List[model.Description]) -> None:
-        # TODO: Review how validator works. Ideally they can be extended and disabled from configuration.
+    def _validate_target(
+            self, target: model.Spec, target_descriptions: List[model.Description]) -> None:
         for validator in self._validators:
-            validator.validate_target(target, descriptions)
-        self._check_schema(target, descriptions)
+            validator.validate_target(target, target_descriptions)
+        self._check_schema(target, target_descriptions)
 
     def _check_schema(self, target: model.Spec, descriptions: List[model.Description]) -> None:
         schemas = self._load_schemas(target)
@@ -77,11 +77,21 @@ class Resolver:
 
     def _check_dependencies(self, *,
                             current: model.Spec,
-                            target: model.Spec,
-                            descriptions: List[model.Description]) -> None:
-        # TODO Connector checks for connector plugins
+                            target_descriptions: List[model.Description]) -> None:
+        # TODO Consider resources added or removed with delta
         # TODO Stream and Table checks for UDFs
-        pass
+        for desc in target_descriptions:
+            for dep in desc.depends:
+                found = False
+                for curr in current.specs:
+                    if curr.resource_type == dep.resource_type \
+                            and curr.name == dep.name:
+                        found = True
+                        break
+                if not found:
+                    raise ValueError(f"Resource {desc.spec.resource_type.capitalize()} [{desc.spec.name}] "
+                                     f"depends on {dep.resource_type.capitalize()} [{dep.name}]"
+                                     f"which was not found in the system")
 
     def _order_delta(self, delta: model.Delta) -> None:
         orders = {

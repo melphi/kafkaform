@@ -1,12 +1,12 @@
 import dataclasses
 from typing import Optional, List
 
-from app import model
+from app import model, client
 from app.component import component
 
 
 class BaseConnectResolver(component.Resolver):
-    def __init__(self, connect_client: client.ConnectClient, connector_type: str):
+    def __init__(self, *, connect_client: client.ConnectClient, connector_type: str):
         self._connect_client = connect_client
         self._connector_type = connector_type
 
@@ -45,13 +45,18 @@ class BaseConnectResolver(component.Resolver):
         raise NotImplementedError()
 
 
-# TODO: Return list of connector classes.
 class ConnectorClassResolver(component.Resolver):
+    def __init__(self, *, connect_client: client.ConnectClient):
+        self._connect_client = connect_client
+
     def describe(self, target: model.SpecItem) -> model.Description:
-        raise NotImplementedError()
+        return model.Description(
+            depends=list(),
+            spec=target,
+            schema=None)
 
     def system_list(self) -> List[str]:
-        raise NotImplementedError()
+        return self._connect_client.plugins_list()
 
     def system_get(self, name: str) -> Optional[model.SpecItem]:
         raise NotImplementedError()

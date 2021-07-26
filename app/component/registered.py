@@ -1,13 +1,20 @@
 from typing import List
 
 from app import client, model
-from app.component import component, schema, sink, source, stream, table
+from app.component import component, connect, schema, sink, source, stream, table
 
 
 def build_all(*,
               connect_client: client.ConnectClient,
               ksql_client: client.KsqlClient) -> List[component.Component]:
     components = list()
+
+    # Connector class
+    components.append(component.Component(
+        resource_type=model.RESOURCE_CONNECTOR_CLASS,
+        parser=None,
+        resolver=connect.ConnectorClassResolver(connect_client=connect_client),
+        transitioner=None))
 
     # Schema
     components.append(component.Component(
