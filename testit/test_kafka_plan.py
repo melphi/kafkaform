@@ -21,5 +21,5 @@ class TestKafkaPlanCommand(unittest.TestCase):
             delta = cmd.run()
 
         # Then
-        self.assertIsNotNone(delta)
+        self.assertTrue(delta)
         self.assertTrue(delta.items)

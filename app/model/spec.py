@@ -10,6 +10,7 @@ class FieldType(enum.Enum):
     BOOLEAN = "BOOLEAN"
     DECIMAL = "DECIMAL"
     DOUBLE = "DOUBLE"
+    DYNAMIC = "DYNAMIC"  # Dynamic type leads to different outcomes depending on the input.
     INT = "INT"
     STRING = "STRING"
     TIMESTAMP = "TIMESTAMP"

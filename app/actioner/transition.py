@@ -19,6 +19,7 @@ class Transitioner:
         self._transitioners_map = transitioners_map
 
     def transit_state(self, changes: model.Delta, ask_confirmation: bool) -> None:
+        self._validate_changes(changes)
         if ask_confirmation:
             self._LOG.info("Planned changes..")
             self._LOG.info(self._pretty_print(changes))
@@ -29,20 +30,30 @@ class Transitioner:
                 exit(1)
         self._transit_states(changes)
 
-    def _transit_states(self, changes: model.Delta) -> None:
+    def _validate_changes(self, changes: model.Delta) -> None:
         for change in changes.items:
             transitioner = self._transitioners_map.get(change.resource_type)
             if not transitioner:
                 raise ValueError(f"No transitioner registered for resource type [{change.resource_type}]")
-            assert change.target or change.current, "Missing delta current and/or target information."
+            try:
+                transitioner.validate(change)
+            except Exception as e:
+                name = change.target.name if change.target else change.current.name
+                resource_type = change.target.resource_type if change.target else change.current.resource_type
+                raise ValueError(f"Invalid resource [{resource_type}.{name}] configuration: {str(e)}")
+
+    def _transit_states(self, changes: model.Delta) -> None:
+        for change in changes.items:
+            assert change.target or change.current, "Missing current and/or target delta information."
             name = change.target.name if change.target else change.current.name
+            transitioner = self._transitioners_map[change.resource_type]
             action = self._action_type(change)
             try:
                 transitioner.apply(change)
-                self._LOG.info(f"{change.resource_type.capitalize()} [{name}] {action} completed")
+                self._LOG.info(f"{action.capitalize()} {change.resource_type.capitalize()} [{name}] completed")
             except Exception as e:
-                raise ValueError(f"Error during {action} of {change.resource_type.capitalize()} "
-                                 f"[{name}]: {str(e)}")
+                raise ValueError(f"{action.capitalize()} {change.resource_type.capitalize()} "
+                                 f"[{name}] error: {str(e)}")
 
     def _pretty_print(self, changes: model.Delta) -> str:
         res = ""

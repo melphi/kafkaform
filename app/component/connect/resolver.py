@@ -6,6 +6,9 @@ from app.component import component
 
 
 class BaseConnectResolver(component.Resolver):
+    _KNOWN_SINKS = []
+    _KNOWN_SOURCES = ["io.confluent.kafka.connect.datagen.DatagenConnector"]
+
     def __init__(self, *, connect_client: client.ConnectClient, connector_type: str):
         self._connect_client = connect_client
         self._connector_type = connector_type
@@ -24,12 +27,13 @@ class BaseConnectResolver(component.Resolver):
             spec=target)
 
     def system_list(self) -> List[str]:
-        connectors = self._connect_client.connectors_list()
-        for connector in connectors:
-            info = self._connect_client.connector_get(connector)
-            # It assumes that the connector class name contains the connector type.
-            if self._connector_type in info.config["connector.class"].lower():
-                yield connector
+        connectors = list()
+        names = self._connect_client.connectors_list()
+        for name in names:
+            info = self._connect_client.connector_get(name)
+            if self._is_type(info, self._connector_type):
+                connectors.append(name)
+        return connectors
 
     def system_get(self, name: str) -> Optional[model.SpecItem]:
         info = self._connect_client.connector_get(name)
@@ -41,6 +45,18 @@ class BaseConnectResolver(component.Resolver):
                 params=dataclasses.asdict(params),
                 schema_name=None)
         return None
+
+    def _is_type(self, info: model.ConnectorInfo, connector_type: str) -> bool:
+        connector_class = info.config["connector.class"]
+        if model.RESOURCE_SOURCE in connector_class.lower() \
+                or connector_class in self._KNOWN_SOURCES:
+            return connector_type == model.RESOURCE_SOURCE
+        elif model.RESOURCE_SINK in connector_class.lower() \
+                or connector_class in self._KNOWN_SINKS:
+            return connector_type == model.RESOURCE_SINK
+        raise ValueError(f"Can not recognise type of connector class [{connector_class}]. "
+                         f"As class name does not contain valuable information, "
+                         f"update list of known sinks and sources.")
 
     def _get_schema(self, target: model.SpecItem) -> Optional[model.SchemaParams]:
         raise NotImplementedError()

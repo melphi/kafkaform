@@ -30,6 +30,9 @@ class KsqlClient:
     def stream_drop(self, name: str) -> None:
         raise NotImplementedError()
 
+    def syntax_check(self, sql: str) -> None:
+        pass
+
     def table_list(self) -> List[str]:
         raise NotImplementedError()
 
@@ -59,6 +62,14 @@ class KsqlClientImpl(KsqlClient):
         assert result.get("commandStatus") and result["commandStatus"].get("status") == self._STATE_SUCCESS, \
             f"Unexpected KSQL command response [{str(result)}]"
 
+    def syntax_check(self, sql: str) -> None:
+        query = f"EXPLAIN {sql}"
+        try:
+            self._execute_sql_request(query, {})
+        except KsqlException as e:
+            if e.msg.startswith("Line"):
+                raise e
+
     def resource_describe(self, name: str) -> Optional[model.ResourceInfo]:
         try:
             data = self._execute_sql_request("DESCRIBE {{ name }};", {"name": name})
@@ -77,7 +88,7 @@ class KsqlClientImpl(KsqlClient):
         return [stream["name"] for stream in item.get("streams")]
 
     def stream_drop(self, name: str) -> None:
-        raise NotImplementedError()
+        self._execute_sql_request("DROP STREAM IF EXISTS {{ name }} DELETE TOPIC;", {"name": name})
 
     def table_list(self) -> List[str]:
         data = self._execute_sql_request("SHOW TABLES;", {})
@@ -85,7 +96,7 @@ class KsqlClientImpl(KsqlClient):
         return [stream["name"] for stream in item.get("tables")]
 
     def table_drop(self, name: str) -> None:
-        raise NotImplementedError()
+        self._execute_sql_request("DROP TABLE IF EXISTS {{ name }} DELETE TOPIC;", {"name": name})
 
     def udf_list(self) -> List[str]:
         raise NotImplementedError()

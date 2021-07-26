@@ -30,9 +30,9 @@ class TestKafkaDumpCommand(unittest.TestCase):
                     resolver=dep.resolver,
                     dest_path=target.name)
                 cmd.run()
+            written = target.read()
 
         # Then
-        written = target.read()
         self.assertTrue(yaml.safe_load(written))
         self.assertIn("sources:", written)
         self.assertIn("streams:", written)

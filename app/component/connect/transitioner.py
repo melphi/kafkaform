@@ -31,3 +31,8 @@ class BaseConnectTransitioner(component.Transitioner):
                 self._LOG.info(f"{self._connector_type.capitalize()} connector [{delta.target.name}] updated")
             else:
                 self._LOG.info(f"{self._connector_type.capitalize()} connector [{delta.target.name}] created")
+
+    def validate(self, delta: model.DeltaItem) -> None:
+        if delta.target:
+            params = model.ConnectParams(**delta.target.params)
+            self._connect_client.connector_validate(delta.target.name, params.config)

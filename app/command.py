@@ -47,7 +47,7 @@ class KafkaApplyCommand(Command):
         target = self._parser.parse(self._file_path)
         if target == model.EMPTY_SPEC:
             raise ValueError("Parsed files do not contain any resource")
-        delta = self._resolver.load_delta(target)
+        delta = self._resolver.load_checked_delta(target)
         if delta == model.EMPTY_DELTA:
             self._LOG.info("System is up to date")
         else:
@@ -97,4 +97,4 @@ class KafkaPlanCommand(Command):
 
     def run(self) -> model.Delta:
         target = self._parser.parse(self._file_path)
-        return self._resolver.load_delta(target)
+        return self._resolver.load_checked_delta(target)

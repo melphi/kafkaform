@@ -1,2 +1,4 @@
 mypy==0.910             # Type checking
 testcontainers==3.4.1   # Integration testing
+types-requests==2.25.0  # Types checking for requests
+types-PyYAML==5.4.3     # Types checking for pyyaml

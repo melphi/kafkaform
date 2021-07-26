@@ -16,14 +16,7 @@ class Resolver:
             validate.NameConventionValidator(),
             validate.NameUniquenessValidator()]
 
-    def load_current(self) -> model.Spec:
-        spec = model.Spec(specs=[])
-        for resolver in self._resolvers_map.values():
-            for name in resolver.system_list():
-                spec.specs.append(resolver.system_get(name))
-        return spec
-
-    def load_delta(self, target: model.Spec) -> model.Delta:
+    def load_checked_delta(self, target: model.Spec) -> model.Delta:
         target_descriptions = self._get_descriptions(target)
         assert len(target_descriptions) == len(target.specs)
         self._validate_target(target_descriptions)
@@ -35,6 +28,13 @@ class Resolver:
             current=current, target_descriptions=target_descriptions)
         self._order_delta(delta)
         return delta
+
+    def load_current(self) -> model.Spec:
+        spec = model.Spec(specs=[])
+        for resolver in self._resolvers_map.values():
+            for name in resolver.system_list():
+                spec.specs.append(resolver.system_get(name))
+        return spec
 
     def _get_descriptions(self, target: model.Spec) -> List[model.Description]:
         descriptions = list()
@@ -84,7 +84,7 @@ class Resolver:
                 found = False
                 for curr in current.specs:
                     if curr.resource_type == dep.resource_type \
-                            and curr.name == dep.name:
+                            and curr.name.lower() == dep.name.lower():
                         found = True
                         break
                 if not found:
@@ -113,26 +113,28 @@ class Resolver:
         current_map: Dict[str, List[model.SpecItem]] = {}
         for spec in current.specs:
             if spec.name in current_map:
-                current_map[spec.name].append(spec)
+                current_map[spec.name.lower()].append(spec)
             else:
-                current_map[spec.name] = [spec]
+                current_map[spec.name.lower()] = [spec]
 
         delta = model.Delta(items=[])
         for target_spec in target.specs:
             found = False
-            for current_item in current_map.get(target_spec.name):
-                if current_item.resource_type == target_spec.resource_type:
-                    found = True
-                    resolver = self._resolvers_map[target_spec.resource_type]
-                    if resolver.equals(current_item, target_spec):
-                        self._LOG.info(f"{target_spec.resource_type} [{target_spec.name}] changes")
-                        delta.items.append(model.DeltaItem(
-                            deleted=False,
-                            resource_type=target_spec.resource_type,
-                            current=current_item,
-                            target=target_spec))
-                    else:
-                        self._LOG.info(f"{target_spec.resource_type} [{target_spec.name}] remains the same")
+            if target_spec.name.lower() in current_map:
+                for current_item in current_map.get(target_spec.name.lower()):
+                    if current_item.resource_type == target_spec.resource_type:
+                        found = True
+                        resolver = self._resolvers_map[target_spec.resource_type]
+                        if resolver.equals(current_item, target_spec):
+                            self._LOG.info(f"{target_spec.resource_type} [{target_spec.name}] changes")
+                            delta.items.append(model.DeltaItem(
+                                deleted=False,
+                                resource_type=target_spec.resource_type,
+                                current=current_item,
+                                target=target_spec))
+                        else:
+                            self._LOG.info(f"{target_spec.resource_type} [{target_spec.name}] remains the same")
+                        break
             if not found:
                 self._LOG.info(f"{target_spec.resource_type} [{target_spec.name}] is new")
                 delta.items.append(model.DeltaItem(

@@ -41,6 +41,9 @@ class Transitioner:
     def apply(self, delta: model.DeltaItem) -> None:
         raise NotImplementedError()
 
+    def validate(self, delta: model.DeltaItem) -> None:
+        raise NotImplementedError()
+
 
 @dataclass
 class Component:

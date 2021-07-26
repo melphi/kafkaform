@@ -11,7 +11,9 @@ def run(argv: list, cfg: conf.Config) -> None:
     args = _parse_args(argv)
     dep = deps.Dependencies(cfg)
     if args.cmd == command.ConfigDebugCommand.NAME:
-        command.ConfigDebugCommand(file_path=args.file_path).run()
+        command.ConfigDebugCommand(
+            file_path=args.file_path,
+            parser=dep.parser).run()
     elif args.cmd == command.KafkaApplyCommand.NAME:
         command.KafkaApplyCommand(
             parser=dep.parser,
