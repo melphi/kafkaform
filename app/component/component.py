@@ -45,6 +45,6 @@ class Transitioner:
 @dataclass
 class Component:
     resource_type: str
-    parser: Parser
+    parser: Optional[Parser]
     resolver: Resolver
-    transitioner: Transitioner
+    transitioner: Optional[Transitioner]

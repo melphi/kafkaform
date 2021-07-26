@@ -11,7 +11,7 @@ from app.component import component
 
 # TODO: Parse repeated tags.
 class Parser:
-    def __init__(self, parsers: List[component.Parser]):
+    def __init__(self, *, parsers: List[component.Parser]):
         self._parsers_map: Dict[str, component.Parser] = {parser.tag_name(): parser for parser in parsers}
 
     def render(self, file_path: str) -> str:

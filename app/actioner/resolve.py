@@ -4,17 +4,17 @@ from typing import Dict, List
 from app import component, model
 from app.actioner import validate
 
-# HERE I AM, TEST AND MAKE IT RUN
-
 
 class Resolver:
     """Resolves system delta, validates system configuration."""
 
     _LOG = logging.getLogger(__name__)
 
-    def __init__(self, resolvers_map: Dict[str, component.Resolver]):
+    def __init__(self, *, resolvers_map: Dict[str, component.Resolver]):
         self._resolvers_map = resolvers_map
-        self._validators = [validate.NameConventionValidator(), validate.NameUniquenessValidator()]
+        self._validators = [
+            validate.NameConventionValidator(),
+            validate.NameUniquenessValidator()]
 
     def load_current(self) -> model.Spec:
         spec = model.Spec(specs=[])
@@ -24,15 +24,14 @@ class Resolver:
         return spec
 
     def load_delta(self, target: model.Spec) -> model.Delta:
-        self._validate_target(target)
-
         descriptions = self._get_descriptions(target)
-        self._check_schema(target, descriptions)
+        self._validate_target(target, descriptions)
 
         current = self.load_current()
         delta = self._build_delta(current, target)
 
-        self._check_dependencies(target)
+        self._check_dependencies(
+            current=current, target=target, descriptions=descriptions)
         self._order_delta(delta)
         return delta
 
@@ -46,10 +45,11 @@ class Resolver:
                 raise ValueError(f"Could not describe resource [{spec.full_name()}]: {str(e)}")
         return descriptions
 
-    def _validate_target(self, target: model.Spec) -> None:
+    def _validate_target(self, target: model.Spec, descriptions: List[model.Description]) -> None:
         # TODO: Review how validator works. Ideally they can be extended and disabled from configuration.
         for validator in self._validators:
-            validator.validate(target)
+            validator.validate_target(target, descriptions)
+        self._check_schema(target, descriptions)
 
     def _check_schema(self, target: model.Spec, descriptions: List[model.Description]) -> None:
         schemas = self._load_schemas(target)
@@ -75,7 +75,10 @@ class Resolver:
                 schemas[spec.name] = described.schema
         return schemas
 
-    def _check_dependencies(self, target: model.Spec) -> None:
+    def _check_dependencies(self, *,
+                            current: model.Spec,
+                            target: model.Spec,
+                            descriptions: List[model.Description]) -> None:
         # TODO Connector checks for connector plugins
         # TODO Stream and Table checks for UDFs
         pass

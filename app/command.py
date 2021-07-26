@@ -1,6 +1,6 @@
 import logging
 
-from app import actioner, client, spec, state
+from app import actioner, client
 
 
 class Command:
@@ -16,7 +16,7 @@ class ConfigDebugCommand(Command):
 
     def __init__(self, file_path: str):
         self._file_path = file_path
-        self._parser = spec.Parser()
+        self._parser = actioner.Parser()
 
     def run(self) -> str:
         rendered = self._parser.render(self._file_path)

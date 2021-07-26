@@ -4,7 +4,7 @@ from app import model, client
 from app.component import component
 
 
-class BaseStreamActioner(component.Actioner):
+class BaseStreamTransitioner(component.Transitioner):
     _LOG = logging.getLogger(__name__)
 
     def __init__(self, ksql_client: client.KsqlClient, resource_type: str):
@@ -36,6 +36,6 @@ class BaseStreamActioner(component.Actioner):
                 self._LOG.info(f"{self._resource_type.capitalize()} [{delta.target.name}] created")
 
 
-class StreamActioner(BaseStreamActioner):
+class StreamTransitioner(BaseStreamTransitioner):
     def __init__(self, ksql_client: client.KsqlClient):
         super().__init__(ksql_client, model.RESOURCE_STREAM)

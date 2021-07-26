@@ -1,7 +1,21 @@
+from typing import List
+
 import re
 
 from app import model
 from app.actioner.validate import validate
+
+
+class NamingConsistencyValidator(validate.Validator):
+    """Makes sure item name matches the resource name (topic, table, etc) which will be created"""
+
+    def validate_target(
+            self, target: model.Spec, descriptions: List[model.Description]) -> bool:
+        # if source.target.config.get("topic"):
+        #     self._check_pattern(source.target.config["topic"], "source.config.topic")
+        # TODO: Source name equals topic name
+        # TODO: Stream name equals resource name / topic name (?)
+        raise NotImplementedError()
 
 
 class NameConventionValidator(validate.Validator):
@@ -9,7 +23,8 @@ class NameConventionValidator(validate.Validator):
 
     _PATTERN = re.compile(r"\S+__\S+__\S+__v\d+")
 
-    def validate(self, target: model.Spec) -> bool:
+    def validate_target(
+            self, target: model.Spec, descriptions: List[model.Description]) -> bool:
         for spec in target.specs:
             self._check_pattern(spec)
         return True
@@ -22,21 +37,11 @@ class NameConventionValidator(validate.Validator):
                              f"Example of valid pattern [layer__resourcetype__project__entityname__v1]")
 
 
-class NamingConsistencyValidator(validate.Validator):
-    """Makes sure item name matches the resource name (topic, table, etc) which will be created"""
-
-    def validate(self, target: model.Spec) -> bool:
-        # if source.target.config.get("topic"):
-        #     self._check_pattern(source.target.config["topic"], "source.config.topic")
-        # TODO: Source name equals topic name
-        # TODO: Stream name equals resource name / topic name (?)
-        raise NotImplementedError()
-
-
 class NameUniquenessValidator(validate.Validator):
     """Validates name uniqueness among items"""
 
-    def validate(self, target: model.Spec) -> bool:
+    def validate_target(
+            self, target: model.Spec, descriptions: List[model.Description]) -> bool:
         names = {}
         for spec in target.specs:
             if spec.name in names:

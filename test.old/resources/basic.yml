@@ -22,6 +22,15 @@ streams:
           WITH (KAFKA_TOPIC='pageviews', VALUE_FORMAT='AVRO');"
     schema: "schema_pageviews"
 
+  - name: "ref_pageviews"
+    sql: "CREATE STREAM ref_pageviews (viewtime BIGINT, userid VARCHAR, pageid VARCHAR)
+          WITH (VALUE_FORMAT='AVRO');"
+
+  - name: "raw_pageviews_insert"
+    sql: "INSERT INTO ref_pageviews
+          SELECT *
+          FROM raw_pageviews_stream"
+
 schemas:
   - name: "schema_pageviews"
     fields:

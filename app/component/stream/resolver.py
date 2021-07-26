@@ -6,7 +6,7 @@ from app import model, client
 
 
 class BaseStreamResolver(component.Resolver):
-    def __init__(self, ksql_client: client.KsqlClient):
+    def __init__(self, *, ksql_client: client.KsqlClient):
         self._ksql_client = ksql_client
         self._sys_udf: Dict[str, model.UdfInfo] = {}
 

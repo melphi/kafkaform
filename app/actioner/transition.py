@@ -15,7 +15,7 @@ class Transitioner:
 
     _LOG = logging.getLogger(__name__)
 
-    def __init__(self, transitioners_map: Dict[str, component.Transitioner]):
+    def __init__(self, *, transitioners_map: Dict[str, component.Transitioner]):
         self._transitioners_map = transitioners_map
 
     def transit_state(self, changes: model.Delta, ask_confirmation: bool) -> None:

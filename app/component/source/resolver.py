@@ -1,7 +1,7 @@
 from typing import Optional
 
 from app import model, client
-from app.component.sink import resolver
+from app.component.connect import resolver
 
 
 class SourceResolver(resolver.BaseConnectResolver):

@@ -4,10 +4,10 @@ from app import model, client
 from app.component import component
 
 
-class BaseConnectActioner(component.Actioner):
+class BaseConnectTransitioner(component.Transitioner):
     _LOG = logging.getLogger(__name__)
 
-    def __init__(self, connect_client: client.ConnectClient, connector_type: str):
+    def __init__(self, *, connect_client: client.ConnectClient, connector_type: str):
         self._connect_client = connect_client
         self._connector_type = connector_type
 
@@ -31,9 +31,3 @@ class BaseConnectActioner(component.Actioner):
                 self._LOG.info(f"{self._connector_type.capitalize()} connector [{delta.target.name}] updated")
             else:
                 self._LOG.info(f"{self._connector_type.capitalize()} connector [{delta.target.name}] created")
-
-
-class SinkActioner(BaseConnectActioner):
-    def __init__(self, connect_client: client.ConnectClient):
-        super().__init__(connect_client, "sink")
-
