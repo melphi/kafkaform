@@ -11,19 +11,28 @@ from app import deps
 class TestKafkaDumpCommand(unittest.TestCase):
     def test_run(self):
         # Given
+        file_path = "resources/project/raw_de.yml"
         with tempfile.NamedTemporaryFile("w+") as target:
             # When
             with context.ITestContext() as ctx:
                 dep = deps.Dependencies(ctx.get_config())
+
+                cmd = command.KafkaApplyCommand(
+                    ask_confirmation=False,
+                    parser=dep.parser,
+                    resolver=dep.resolver,
+                    transitioner=dep.transitioner,
+                    file_path=file_path)
+                cmd.run()
+
                 cmd = command.KafkaDumpCommand(
-                    connect_client=dep.connect_client,
-                    ksql_client=dep.ksql_client,
+                    parser=dep.parser,
+                    resolver=dep.resolver,
                     dest_path=target.name)
                 cmd.run()
-            written = target.read()
 
         # Then
-        self.assertTrue(written)
+        written = target.read()
         self.assertTrue(yaml.safe_load(written))
         self.assertIn("sources:", written)
         self.assertIn("streams:", written)

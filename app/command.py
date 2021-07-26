@@ -1,6 +1,6 @@
 import logging
 
-from app import actioner, client, model
+from app import actioner, model
 
 
 class Command:

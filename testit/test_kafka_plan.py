@@ -15,10 +15,11 @@ class TestKafkaPlanCommand(unittest.TestCase):
         with context.ITestContext() as ctx:
             dep = deps.Dependencies(ctx.get_config())
             cmd = command.KafkaPlanCommand(
-                connect_client=dep.connect_client,
+                parser=dep.parser,
+                resolver=dep.resolver,
                 file_path=file_path)
             delta = cmd.run()
 
         # Then
         self.assertIsNotNone(delta)
-        self.assertTrue(delta.delta_sources)
+        self.assertTrue(delta.items)

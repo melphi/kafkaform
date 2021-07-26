@@ -37,8 +37,9 @@ class SchemaParser(component.Parser):
         }
 
     def parse(self, block: dict) -> List[model.SpecItem]:
+        assert isinstance(block, list)
         specs = list()
-        for item in block[self.tag_name()]:
+        for item in block:
             fields = list()
             if item.get("fields"):
                 assert isinstance(item["fields"], list), "Fields should be a list of values"

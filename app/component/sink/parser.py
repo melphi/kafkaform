@@ -26,8 +26,9 @@ class SinkParser(component.Parser):
         }
 
     def parse(self, block: dict) -> List[model.SpecItem]:
+        assert isinstance(block, list)
         specs = list()
-        for item in block[self.tag_name()]:
+        for item in block:
             params = model.ConnectParams(config=item.get("config"))
             specs.append(model.SpecItem(
                 name=item.get("name"),

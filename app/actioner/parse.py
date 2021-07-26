@@ -1,3 +1,4 @@
+import dataclasses
 from typing import Dict, IO, List
 
 import os
@@ -58,9 +59,9 @@ class Parser:
             parser = self._parsers_by_type.get(spec.resource_type)
             if parser:
                 if parser.tag_name() in values:
-                    values[parser.tag_name()].append(spec)
+                    values[parser.tag_name()].append(dataclasses.asdict(spec))
                 else:
-                    values[parser.tag_name()] = [spec]
+                    values[parser.tag_name()] = [dataclasses.asdict(spec)]
         yaml.safe_dump(values, target)
 
     def _check_schema(self, doc: dict) -> None:
@@ -75,7 +76,7 @@ class Parser:
     def _build_spec(self, doc: dict) -> model.Spec:
         specs = list()
         for key, val in doc.items():
-            parser = self._parsers_by_type.get(key)
+            parser = self._parsers_by_tag.get(key)
             assert parser, f"Tag {key} does not have any registered parser"
             for spec in parser.parse(val):
                 specs.append(spec)

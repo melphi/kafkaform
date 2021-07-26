@@ -9,8 +9,7 @@ from app.actioner.validate import validate
 class NamingConsistencyValidator(validate.Validator):
     """Makes sure item name matches the resource name (topic, table, etc) which will be created"""
 
-    def validate_target(
-            self, target: model.Spec, descriptions: List[model.Description]) -> bool:
+    def validate_target(self, *, descriptions: List[model.Description]) -> bool:
         # if source.target.config.get("topic"):
         #     self._check_pattern(source.target.config["topic"], "source.config.topic")
         # TODO: Source name equals topic name
@@ -23,10 +22,9 @@ class NameConventionValidator(validate.Validator):
 
     _PATTERN = re.compile(r"\S+__\S+__\S+__v\d+")
 
-    def validate_target(
-            self, target: model.Spec, descriptions: List[model.Description]) -> bool:
-        for spec in target.specs:
-            self._check_pattern(spec)
+    def validate_target(self, *, descriptions: List[model.Description]) -> bool:
+        for desc in descriptions:
+            self._check_pattern(desc.spec)
         return True
 
     def _check_pattern(self, spec: model.SpecItem) -> None:
@@ -40,11 +38,10 @@ class NameConventionValidator(validate.Validator):
 class NameUniquenessValidator(validate.Validator):
     """Validates name uniqueness among items"""
 
-    def validate_target(
-            self, target: model.Spec, descriptions: List[model.Description]) -> bool:
+    def validate_target(self, *, descriptions: List[model.Description]) -> bool:
         names = {}
-        for spec in target.specs:
-            if spec.name in names:
-                raise ValueError(f"Names must be unique, duplicate found [{spec.name}]")
-            names[spec.name] = True
+        for desc in descriptions:
+            if desc.spec.name in names:
+                raise ValueError(f"Names must be unique, duplicate found [{desc.spec.name}]")
+            names[desc.spec.name] = True
         return True

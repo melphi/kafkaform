@@ -16,15 +16,15 @@ class TestKafkaApplyCommand(unittest.TestCase):
             dep = deps.Dependencies(ctx.get_config())
             cmd = command.KafkaApplyCommand(
                 ask_confirmation=False,
-                connect_client=dep.connect_client,
-                ksql_client=dep.ksql_client,
+                parser=dep.parser,
+                resolver=dep.resolver,
+                transitioner=dep.transitioner,
                 file_path=file_path)
             delta = cmd.run()
 
         # Then
         self.assertIsNotNone(delta)
-        self.assertTrue(delta.delta_sources)
-        self.assertTrue(delta.delta_streams)
+        self.assertTrue(delta.items)
 
     def test_apply_idempotent(self):
         # Given
@@ -35,14 +35,14 @@ class TestKafkaApplyCommand(unittest.TestCase):
             dep = deps.Dependencies(ctx.get_config())
             cmd = command.KafkaApplyCommand(
                 ask_confirmation=False,
-                connect_client=dep.connect_client,
-                ksql_client=dep.ksql_client,
+                parser=dep.parser,
+                resolver=dep.resolver,
+                transitioner=dep.transitioner,
                 file_path=file_path)
             delta_1 = cmd.run()
             delta_2 = cmd.run()
 
         # Then
         self.assertNotEqual(delta_1, delta_2)
-        self.assertIsNotNone(delta_2)
-        self.assertFalse(delta_2.delta_sources)
-        self.assertFalse(delta_2.delta_streams)
+        self.assertTrue(delta_2)
+        self.assertFalse(delta_2.items)

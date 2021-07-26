@@ -27,8 +27,9 @@ class TableParser(component.Parser):
         }
 
     def parse(self, block: dict) -> List[model.SpecItem]:
+        assert isinstance(block, list)
         specs = list()
-        for item in block[self.tag_name()]:
+        for item in block:
             params = model.StreamParams(sql=item.get("sql"))
             specs.append(model.SpecItem(
                 name=item.get("name"),

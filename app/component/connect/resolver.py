@@ -11,7 +11,8 @@ class BaseConnectResolver(component.Resolver):
         self._connector_type = connector_type
 
     def describe(self, target: model.SpecItem) -> model.Description:
-        class_name = target.params.get("connector.class")
+        params = model.ConnectParams(**target.params)
+        class_name = params.config.get("connector.class")
         if not class_name:
             raise ValueError(f"Missing required parameter [connector.class]")
         depends = [model.Dependency(
@@ -59,4 +60,10 @@ class ConnectorClassResolver(component.Resolver):
         return self._connect_client.plugins_list()
 
     def system_get(self, name: str) -> Optional[model.SpecItem]:
-        raise NotImplementedError()
+        # TODO: Consider to cache plugin list call.
+        if name in self._connect_client.plugins_list():
+            return model.SpecItem(name=name,
+                                  resource_type=model.RESOURCE_CONNECTOR_CLASS,
+                                  params={},
+                                  schema_name=None)
+        return None

@@ -24,14 +24,15 @@ class Resolver:
         return spec
 
     def load_delta(self, target: model.Spec) -> model.Delta:
-        descriptions = self._get_descriptions(target)
-        self._validate_target(target, descriptions)
+        target_descriptions = self._get_descriptions(target)
+        assert len(target_descriptions) == len(target.specs)
+        self._validate_target(target_descriptions)
 
         current = self.load_current()
         delta = self._build_delta(current, target)
 
         self._check_dependencies(
-            current=current, target_descriptions=descriptions)
+            current=current, target_descriptions=target_descriptions)
         self._order_delta(delta)
         return delta
 
@@ -39,40 +40,38 @@ class Resolver:
         descriptions = list()
         for spec in target.specs:
             try:
+                assert spec.resource_type in self._resolvers_map, \
+                    f"Resource type [{spec.resource_type}] does not have a corresponding registered resolver"
                 description = self._resolvers_map[spec.resource_type].describe(spec)
                 descriptions.append(description)
             except Exception as e:
                 raise ValueError(f"Could not describe resource [{spec.full_name()}]: {str(e)}")
         return descriptions
 
-    def _validate_target(
-            self, target: model.Spec, target_descriptions: List[model.Description]) -> None:
+    def _validate_target(self, target_descriptions: List[model.Description]) -> None:
         for validator in self._validators:
-            validator.validate_target(target, target_descriptions)
-        self._check_schema(target, target_descriptions)
+            validator.validate_target(descriptions=target_descriptions)
+        self._check_schema(target_descriptions)
 
-    def _check_schema(self, target: model.Spec, descriptions: List[model.Description]) -> None:
-        schemas = self._load_schemas(target)
+    def _check_schema(self, descriptions: List[model.Description]) -> None:
+        schemas = self._load_schemas(descriptions)
         for description in descriptions:
             if description.spec.schema_name:
                 expected = schemas.get(description.spec.schema_name)
                 if not expected:
                     raise ValueError(f"Resource [{description.spec.full_name}] "
                                      f"requires schema [{description.spec.schema_name}] which is not defined.")
+                # TODO: Should compare different order of elements.
                 if description.schema != expected:
                     raise ValueError(f"Resource [{description.spec.full_name}] schema mismatch. "
                                      f"Expected [{expected}], actual [{description.schema}].")
 
-    def _load_schemas(self, target: model.Spec) -> Dict[str, model.SchemaParams]:
+    def _load_schemas(self, descriptions: List[model.Description]) -> Dict[str, model.SchemaParams]:
         schemas: Dict[str, model.SchemaParams] = {}
-        for spec in target.specs:
-            if spec.resource_type == model.RESOURCE_SCHEMA:
-                resolved = self._resolvers_map[model.RESOURCE_SCHEMA].system_get(spec.name)
-                if resolved:
-                    described = self._resolvers_map[model.RESOURCE_SCHEMA].describe(resolved)
-                else:
-                    described = self._resolvers_map[model.RESOURCE_SCHEMA].describe(spec)
-                schemas[spec.name] = described.schema
+        for desc in descriptions:
+            if desc.spec.resource_type == model.RESOURCE_SCHEMA:
+                assert desc.spec.name not in schemas, f"Duplicated schema name [{desc.spec.name}]"
+                schemas[desc.spec.name] = desc.schema
         return schemas
 
     def _check_dependencies(self, *,
