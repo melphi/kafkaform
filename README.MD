@@ -1,11 +1,11 @@
 ## Must have
 
-- [ ] Apply sink
 - [ ] Development documentation
-- [ ] Schema creation on connect
 - [ ] Schema enforcement on streams
 - [ ] Schema enforcement on tables
-- [ ] Dependencies check (installed connnectors, UDFs, topics)
+- [x] Apply sink
+- [x] Schema creation on connect
+- [x] Dependencies check (installed connnectors, UDFs, topics)
 - [x] Apply streams (based on raw sql)
 - [x] Jinga2 templates  
 - [x] Debug command
@@ -15,6 +15,7 @@
 
 ## Should have
 
+- [ ] Topics creation with AVRO schema
 - [ ] Connector can produce multiple named topics and schemas (eg JDBC)
 - [ ] Automatic ordering of resources creation (dependencies tree)
 - [ ] Handle case in which a stream becomes a table and vice versa
@@ -30,6 +31,6 @@
 ## Validation
 
 - [ ] Do not support multiple sql statement in queries (it should be ok with safe sql builder already).
-- [ ] Connector class installed
 - [ ] Connector name follows topic name
 - [ ] Rules can be disabled
+- [x] Connector class installed
