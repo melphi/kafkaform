@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Dict, IO, List
+from typing import Dict, IO, Iterator, List
 
 import os
 import jinja2
@@ -43,7 +43,8 @@ class Parser:
 
         try:
             content = self.render(file_name)
-            doc = yaml.safe_load(content)
+            docs = yaml.safe_load_all(content)
+            doc = self._merge_docs(docs)
             self._check_schema(doc)
             return self._build_spec(doc)
         except Exception as e:
@@ -63,6 +64,29 @@ class Parser:
                 else:
                     values[parser.tag_name()] = [dataclasses.asdict(spec)]
         yaml.safe_dump(values, target)
+
+    def _merge_docs(self, docs: Iterator[dict]) -> dict:
+        res = {}
+        for doc in docs:
+            for key, val in doc.items():
+                if key in res:
+                    if val is None:
+                        continue
+                    elif res[key] is None:
+                        res[key] = val
+                    elif isinstance(val, list) and isinstance(res[key], list):
+                        res[key].extend(val)
+                    elif isinstance(val, dict) and isinstance(res[key], dict):
+                        repeated = set(val.keys()).intersection(res[key].keys())
+                        assert len(repeated) == 0, \
+                            f"Entry [{key}] is a dict, it can not contain repeated sub entries [{repeated}]."
+                        res[key].update(val)
+                    else:
+                        raise ValueError(f"Entry [{key}] is repeated with different or not updatable data types, "
+                                         f"eg. lists or dictionaries.")
+                else:
+                    res[key] = val
+        return res
 
     def _check_schema(self, doc: dict) -> None:
         self._check_no_empty_spec(doc)
