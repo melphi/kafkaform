@@ -9,7 +9,7 @@ from app.component import component
 class Transitioner:
     _CREATE = "create"
     _DELETE = "delete"
-    _UPDATE = "update"
+    _UPDATE_OR_REPLACE = "update or replace"
 
     """Performs system state transit actions"""
 
@@ -71,4 +71,4 @@ class Transitioner:
             return self._DELETE
         elif not change.current:
             return self._CREATE
-        return self._CREATE
+        return self._UPDATE_OR_REPLACE
