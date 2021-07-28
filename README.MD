@@ -1,5 +1,6 @@
 ## Must have
 
+- [ ] Apply topic
 - [ ] Development documentation
 - [ ] Schema enforcement on streams
 - [ ] Schema enforcement on tables
