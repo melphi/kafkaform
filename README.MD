@@ -17,7 +17,7 @@
 - [x] Define schema (to be referenced by topics etc)
 
 ## Should have
-
+ 
 - [ ] Topics creation with AVRO schema
 - [ ] Connector can produce multiple named topics and schemas (eg JDBC)
 - [ ] Automatic ordering of resources creation (dependencies tree)

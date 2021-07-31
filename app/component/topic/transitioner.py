@@ -1,4 +1,5 @@
 import logging
+import time
 
 from app import client, model
 from app.component import component
@@ -23,6 +24,12 @@ class TopicTransitioner(component.Transitioner):
                 target_params = model.TopicParams(**delta.target.params)
                 if delta.current:
                     self._admin_client.topic_drop(delta.current.name)
+                    for i in range(0, 5):
+                        if not self._admin_client.topic_describe(delta.current.name):
+                            break
+                        time.sleep(0.2)
+                    if self._admin_client.topic_describe(delta.current.name):
+                        raise ValueError(f"Topic [{delta.current.name}] was not deleted withing the timeout")
                 self._admin_client.topic_create(topic_name=delta.target.name,
                                                 num_partitions=target_params.partitions,
                                                 replication_factor=target_params.replicas)
