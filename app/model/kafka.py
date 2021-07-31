@@ -16,6 +16,13 @@ class ResourceInfo:
 
 
 @dataclass
+class TopicInfo:
+    name: str
+    partitions: int
+    replicas: int
+
+
+@dataclass
 class UdfFunctionInfo:
     return_type: str
 

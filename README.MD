@@ -4,6 +4,7 @@
 - [ ] Development documentation
 - [ ] Schema enforcement on streams
 - [ ] Schema enforcement on tables
+- [ ] Schema enforcement on topics
 - [x] Apply sink
 - [x] Schema creation on connect
 - [x] Dependencies check (installed connnectors, UDFs, topics)
@@ -26,7 +27,7 @@
 
 ## Nice to have
 
-- [ ] Apply topics
+- [ ] Show dependency graph
 - [ ] Apply tables (with pre-populated data) 
 
 ## Validation

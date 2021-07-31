@@ -10,7 +10,6 @@ from app import model
 from app.component import component
 
 
-# TODO: Parse repeated tags.
 class Parser:
     def __init__(self, *, parsers_map: Dict[str, component.Parser]):
         self._parsers_by_type = parsers_map
@@ -120,5 +119,4 @@ class Parser:
             schemas[name] = schema
         return {
             "type": "object",
-            "properties": schemas
-        }
+            "properties": schemas}

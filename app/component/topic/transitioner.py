@@ -1,21 +1,41 @@
-from app import model
+import logging
+
+from app import client, model
 from app.component import component
 
 
 class TopicTransitioner(component.Transitioner):
-    def validate(self, delta: model.DeltaItem) -> None:
-        raise NotImplementedError()
+    _LOG = logging.getLogger(__name__)
+
+    def __init__(self, *, admin_client: client.AdminClient):
+        self._admin_client = admin_client
 
     def apply(self, delta: model.DeltaItem) -> None:
-        # TODO: Implement topic creation code.
-        # from kafka.admin import KafkaAdminClient, NewTopic
-        #
-        # admin_client = KafkaAdminClient(
-        #     bootstrap_servers="localhost:9092",
-        #     client_id='test'
-        # )
-        #
-        # topic_list = []
-        # topic_list.append(NewTopic(name="example_topic", num_partitions=1, replication_factor=1))
-        # admin_client.create_topics(new_topics=topic_list, validate_only=False)
-        raise NotImplementedError()
+        if delta.deleted:
+            try:
+                self._admin_client.topic_drop(delta.current.name)
+            except Exception as e:
+                raise ValueError(f"Error while deleting topic [{delta.current.name}]: {str(e)}")
+            self._LOG.info(f"Topic [{delta.current.name}] deleted")
+        else:
+            assert delta.target, "Missing topic target object"
+            try:
+                target_params = model.TopicParams(**delta.target.params)
+                if delta.current:
+                    self._admin_client.topic_drop(delta.current.name)
+                self._admin_client.topic_create(topic_name=delta.target.name,
+                                                num_partitions=target_params.partitions,
+                                                replication_factor=target_params.replicas)
+            except Exception as e:
+                raise ValueError(f"Error while updating topic [{delta.target.name}]: {str(e)}")
+            if delta.current:
+                self._LOG.info(f"Topic [{delta.target.name}] replaced")
+            else:
+                self._LOG.info(f"Topic [{delta.target.name}] created")
+
+    def validate(self, delta: model.DeltaItem) -> None:
+        target_params = model.TopicParams(**delta.target.params)
+        if target_params.partitions <= 0 or target_params.replicas <= 0:
+            raise ValueError(f"Partitions [{target_params.partitions}] "
+                             f"or replicas [{target_params.replicas}] "
+                             f"must be None or positive")

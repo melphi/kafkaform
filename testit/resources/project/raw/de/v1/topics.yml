@@ -1,0 +1,4 @@
+topics:
+  - name: raw__topic__gdp__user__v1
+    partitions: 1
+    replicas: 1

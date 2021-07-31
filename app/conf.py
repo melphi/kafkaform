@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
-    kafka_broker_address: str
+    kafka_bootstrap_server: str
     kafka_connect_url: str
     kafka_ksql_url: str
 
@@ -13,7 +13,7 @@ class Config:
 def from_environment() -> Config:
     try:
         return Config(
-            kafka_broker_address=os.environ["KAFKA_BROKER_ADDRESS"],
+            kafka_bootstrap_server=os.environ["KAFKA_BOOTSTRAP_SERVER"],
             kafka_connect_url=os.environ["KAFKA_CONNECT_URL"],
             kafka_ksql_url=os.environ["KAFKA_KSQL_URL"])
     except KeyError as e:

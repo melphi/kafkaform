@@ -5,12 +5,18 @@ from app.model import spec
 
 
 RESOURCE_CONNECTOR_CLASS = "connector_class"
+RESOURCE_TOPIC = "topic"
 RESOURCE_SCHEMA = "schema"
 RESOURCE_SINK = "sink"
 RESOURCE_SOURCE = "source"
 RESOURCE_STREAM = "stream"
 RESOURCE_TABLE = "table"
 RESOURCE_UDF = "udf"
+
+
+@dataclass
+class ConnectParams:
+    config: dict
 
 
 @dataclass
@@ -30,8 +36,9 @@ class TableParams:
 
 
 @dataclass
-class ConnectParams:
-    config: dict
+class TopicParams:
+    partitions: int
+    replicas: int
 
 
 @dataclass

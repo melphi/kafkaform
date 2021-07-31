@@ -8,6 +8,7 @@ class Dependencies:
     """Initialises application dependencies based on configuration"""
 
     def __init__(self, cfg: conf.Config):
+        self._admin_client = client.AdminClientImpl(bootstrap_servers=[cfg.kafka_bootstrap_server])
         self._connect_client = client.ConnectClientImpl(connect_url=cfg.kafka_connect_url)
         self._ksql_client = client.KsqlClientImpl(ksql_url=cfg.kafka_ksql_url)
 
@@ -24,6 +25,7 @@ class Dependencies:
 
     def _create_components(self) -> List[component.Component]:
         components = registered.build_all(
+            admin_client=self._admin_client,
             connect_client=self._connect_client,
             ksql_client=self._ksql_client)
 

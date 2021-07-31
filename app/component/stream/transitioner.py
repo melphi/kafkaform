@@ -28,7 +28,7 @@ class BaseStreamTransitioner(component.Transitioner):
             except Exception as e:
                 raise ValueError(f"Error while updating stream [{delta.target.name}]: {str(e)}")
             if delta.current:
-                self._LOG.info(f"{self._resource_type.capitalize()} [{delta.target.name}] updated")
+                self._LOG.info(f"{self._resource_type.capitalize()} [{delta.target.name}] replaced")
             else:
                 self._LOG.info(f"{self._resource_type.capitalize()} [{delta.target.name}] created")
 

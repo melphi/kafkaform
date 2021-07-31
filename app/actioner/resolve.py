@@ -94,12 +94,12 @@ class Resolver:
 
     def _order_delta(self, delta: model.Delta) -> None:
         orders = {
-            model.RESOURCE_SCHEMA: 1,
-            model.RESOURCE_SOURCE: 2,
-            model.RESOURCE_TABLE: 3,
-            model.RESOURCE_STREAM: 4,
-            model.RESOURCE_SINK: 5
-        }
+            model.RESOURCE_TOPIC: 1,
+            model.RESOURCE_SCHEMA: 2,
+            model.RESOURCE_SOURCE: 3,
+            model.RESOURCE_TABLE: 4,
+            model.RESOURCE_STREAM: 5,
+            model.RESOURCE_SINK: 6}
         tuples = list()
         for item in delta.items:
             pos = orders.get(item.resource_type)

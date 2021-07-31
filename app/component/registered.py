@@ -1,10 +1,11 @@
 from typing import List
 
 from app import client, model
-from app.component import component, connect, schema, sink, source, stream, table
+from app.component import component, connect, schema, sink, source, stream, table, topic
 
 
 def build_all(*,
+              admin_client: client.AdminClient,
               connect_client: client.ConnectClient,
               ksql_client: client.KsqlClient) -> List[component.Component]:
     components = list()
@@ -50,5 +51,12 @@ def build_all(*,
         parser=table.TableParser(),
         resolver=table.TableResolver(ksql_client=ksql_client),
         transitioner=table.TableTransitioner(ksql_client=ksql_client)))
+
+    # Topic
+    components.append(component.Component(
+        resource_type=model.RESOURCE_TOPIC,
+        parser=topic.TopicParser(),
+        resolver=topic.TopicResolver(admin_client=admin_client),
+        transitioner=topic.TopicTransitioner(admin_client=admin_client)))
 
     return components
