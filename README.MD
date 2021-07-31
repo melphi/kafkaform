@@ -1,10 +1,11 @@
 ## Must have
 
-- [ ] Apply topic
+- [ ] Check if topic replicas are detected correctly
 - [ ] Development documentation
 - [ ] Schema enforcement on streams
 - [ ] Schema enforcement on tables
 - [ ] Schema enforcement on topics
+- [x] Apply topic
 - [x] Apply sink
 - [x] Schema creation on connect
 - [x] Dependencies check (installed connnectors, UDFs, topics)

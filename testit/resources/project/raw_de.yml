@@ -1,2 +1,5 @@
+{% include 'raw/de/v1/sinks.yml' %}
 {% include 'raw/de/v1/sources.yml' %}
 {% include 'raw/de/v1/streams.yml' %}
+{% include 'raw/de/v1/tables.yml' %}
+{% include 'raw/de/v1/topics.yml' %}

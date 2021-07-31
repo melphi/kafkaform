@@ -45,7 +45,8 @@ class BaseStreamTransitioner(component.Transitioner):
             self._ksql_client.stream_drop(spec.name)
         elif spec.resource_type == model.RESOURCE_TABLE:
             self._ksql_client.table_drop(spec.name)
-        raise ValueError(f"Unsupported resource type [{self._resource_type}]")
+        else:
+            raise ValueError(f"Unsupported resource type [{self._resource_type}]")
 
     def _get_sql(self, delta: model.DeltaItem) -> str:
         if self._resource_type == model.RESOURCE_STREAM:

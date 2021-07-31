@@ -28,7 +28,7 @@ class ITestContext:
             kafka_ksql_url=self._get_kafka_ksql_url())
 
     def _get_kafka_bootstrap_server(self) -> str:
-        return f"127.0.0.1:{self._compose.get_service_port('broker', 29092)}"
+        return f"127.0.0.1:{self._compose.get_service_port('broker', 9092)}"
 
     def _get_kafka_connect_url(self) -> str:
         return f"http://127.0.0.1:{self._compose.get_service_port('connect', 8083)}"

@@ -125,7 +125,7 @@ class Resolver:
                     if current_item.resource_type == target_spec.resource_type:
                         found = True
                         resolver = self._resolvers_map[target_spec.resource_type]
-                        if resolver.equals(current_item, target_spec):
+                        if not resolver.equals(current_item, target_spec):
                             self._LOG.info(f"{target_spec.resource_type} [{target_spec.name}] changes")
                             delta.items.append(model.DeltaItem(
                                 deleted=False,
