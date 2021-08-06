@@ -14,7 +14,7 @@ class ConfigDebugCommand(Command):
     NAME = "config:debug"
     HELP = "Debug utilities"
 
-    def __init__(self, file_path: str, parser: actioner.Parser):
+    def __init__(self, *, file_path: str, parser: actioner.Parser):
         self._file_path = file_path
         self._parser = parser
 

@@ -1,50 +1,43 @@
-from app import spec
-
 import os
 import unittest
+
+from app import actioner
+from test import instances
 
 
 class ParserTest(unittest.TestCase):
     def test_parse_basic(self):
         # Given
         path = os.path.join(os.path.dirname(__file__), "../resources/basic.yml")
-        parser = spec.Parser()
+        parser = actioner.Parser(parsers_map=instances.PARSERS_MAP)
 
         # When
         res = parser.parse(path)
 
         # Then
-        self.assertIsNotNone(res)
-        self.assertTrue(res.schemas)
-        self.assertTrue(res.sources)
-        self.assertTrue(res.streams)
-        self.assertTrue(res.tables)
+        self.assertTrue(res.specs)
 
     def test_render_advanced(self):
         # Given
         path = os.path.join(os.path.dirname(__file__), "../resources/advanced.yml")
-        parser = spec.Parser()
+        parser = actioner.Parser(parsers_map=instances.PARSERS_MAP)
 
         # When
         res = parser.render(path)
 
         # Then
-        self.assertIsNotNone(res)
+        self.assertTrue(res)
 
     def test_parse_advanced(self):
         # Given
         path = os.path.join(os.path.dirname(__file__), "../resources/advanced.yml")
-        parser = spec.Parser()
+        parser = actioner.Parser(parsers_map=instances.PARSERS_MAP)
 
         # When
         res = parser.parse(path)
 
         # Then
-        self.assertTrue(res)
-        self.assertEqual(1, len(res.sources))
-        for source in res.sources:
-            self.assertIsNotNone(source.name)
-            self.assertGreaterEqual(len(source.config), 1)
-
-    def test_missing_schema(self):
-        self.fail("Not yet implemented")
+        self.assertTrue(res.specs)
+        for spec in res.specs:
+            self.assertIsNotNone(spec.name)
+            self.assertIsNotNone(spec.resource_type)

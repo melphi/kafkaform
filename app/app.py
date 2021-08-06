@@ -6,7 +6,6 @@ import logging
 
 from app import conf, deps, command
 
-HERE I AM, MAKE APPLY IDEMPOTENT TEST PASS, SOME COMPONENTS ARE DETECTED AS CHANGED EVEN IF THEY DO NOT
 
 def run(argv: list, cfg: conf.Config) -> None:
     args = _parse_args(argv)

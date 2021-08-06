@@ -1,16 +1,15 @@
-from app.parse import spec
-from app.state import state
+from app import actioner, model
 
 
 def create_delta(*,
-                 current_sink: spec.SinkSpec = None,
-                 target_sink: spec.SinkSpec = None,
-                 current_source: spec.SourceSpec = None,
-                 target_source: spec.SourceSpec = None,
-                 current_stream: spec.StreamSpec = None,
-                 target_stream: spec.StreamSpec = None,
-                 current_table: spec.TableSpec = None,
-                 target_table: spec.TableSpec = None) -> state.DeltaState:
+                 current_sink: model.SinkSpec = None,
+                 target_sink: model.SinkSpec = None,
+                 current_source: model.SourceSpec = None,
+                 target_source: model.SourceSpec = None,
+                 current_stream: model.StreamSpec = None,
+                 target_stream: model.StreamSpec = None,
+                 current_table: model.TableSpec = None,
+                 target_table: model.TableSpec = None) -> model.DeltaState:
     delta = state.DeltaState(
         delta_sinks=list(),
         delta_tables=list(),
