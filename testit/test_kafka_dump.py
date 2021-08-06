@@ -30,6 +30,12 @@ class TestKafkaDumpCommand(unittest.TestCase):
                     resolver=dep.resolver,
                     dest_path=target.name)
                 cmd.run()
+
+                cmd = command.KafkaPlanCommand(
+                    parser=dep.parser,
+                    resolver=dep.resolver,
+                    file_path=target.name)
+                cmd.run()
             written = target.read()
 
         # Then

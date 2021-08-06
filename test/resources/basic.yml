@@ -1,7 +1,7 @@
 sources:
   - name: "raw__source__gdp__s_cim_policy__v1"
     config:
-      connector.class: "io.confluent.connect.hdfs.HdfsSinkConnector"
+      connector.class: "io.confluent.connect.hdfs.HdfsSourceConnector"
       tasks.max: "10"
       topics: "raw__source__gdp__s_cim_policy__v1"
       hdfs.url: "hdfs://fakehost:9000"
@@ -9,6 +9,11 @@ sources:
       hadoop.home: "/opt/hadoop"
       flush.size: "100"
       rotate.interval.ms: "1000"
+
+topics:
+  - name: "raw_pageviews_topic"
+    partitions: 2
+    replicas: 2
 
 tables:
   - name: "raw_pageviews_table"
@@ -29,3 +34,15 @@ schemas:
         type: "BIGINT"
       - name: "viewtime"
         type: "VARCHAR"
+
+sinks:
+  - name: "raw__sink__gdp__s_cim_policy__v1"
+    config:
+      connector.class: "io.confluent.connect.hdfs.HdfsSinkConnector"
+      tasks.max: "10"
+      topics: "raw_pageviews_stream"
+      hdfs.url: "hdfs://fakehost:9000"
+      hadoop.conf.dir: "/opt/hadoop/conf"
+      hadoop.home: "/opt/hadoop"
+      flush.size: "100"
+      rotate.interval.ms: "1000"

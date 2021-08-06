@@ -21,7 +21,7 @@ class Transitioner:
     def transit_state(self, changes: model.Delta, ask_confirmation: bool) -> None:
         self._validate_changes(changes)
         if ask_confirmation:
-            self._LOG.info("Planned changes..")
+            self._LOG.info("\nPlanned changes..")
             self._LOG.info(self._pretty_print(changes))
             choice = input("Confirm changes? [Y/n]\n")
             print()

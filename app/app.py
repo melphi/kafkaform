@@ -68,6 +68,8 @@ def _parse_args(argv: list) -> any:
 if __name__ == "__main__":
     try:
         logging.basicConfig(level=logging.INFO, format="%(message)s")
+        logging.getLogger("kafka").setLevel(logging.WARNING)
+
         config = conf.from_environment()
         run(sys.argv[1:], config)
         print("\nOperation completed")

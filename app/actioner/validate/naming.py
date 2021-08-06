@@ -30,7 +30,7 @@ class NameConventionValidator(validate.Validator):
     def _check_pattern(self, spec: model.SpecItem) -> None:
         if not spec.name:
             raise ValueError(f"Name is a required field for resource [{spec.resource_type}].")
-        if not self._PATTERN.match(spec.name):
+        if not self._PATTERN.match(spec.name.lower()):
             raise ValueError(f"Invalid name [{spec.name}] for resource type [{spec.resource_type}]. "
                              f"Example of valid pattern [layer__resourcetype__project__entityname__v1]")
 

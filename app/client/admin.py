@@ -24,10 +24,18 @@ class AdminClient:
 
 class AdminClientImpl(AdminClient):
     def __init__(self, *, bootstrap_servers: List[str]):
-        try:
-            self._admin_client = kafka.KafkaAdminClient(bootstrap_servers=bootstrap_servers)
-        except Exception as e:
-            raise ValueError(f"Failed to connect to bootstrap_servers [{bootstrap_servers}]: {str(e)}")
+        assert bootstrap_servers, "Missing parameter bootstrap_servers"
+        self._bootstrap_servers = bootstrap_servers
+        self._client = None
+
+    def _get_client(self) -> kafka.KafkaAdminClient:
+        if not self._client:
+            try:
+                self._client = kafka.KafkaAdminClient(bootstrap_servers=self._bootstrap_servers)
+            except Exception as e:
+                raise ValueError(f"Failed to connect to bootstrap_servers [{self._bootstrap_servers}]: "
+                                 f"{str(e)}")
+        return self._client
 
     def topic_create(
             self, *, topic_name: str, num_partitions: int, replication_factor: int
@@ -35,10 +43,10 @@ class AdminClientImpl(AdminClient):
         topic = admin.NewTopic(topic_name,
                                num_partitions=num_partitions,
                                replication_factor=replication_factor)
-        self._admin_client.create_topics([topic])
+        self._get_client().create_topics([topic])
 
     def topic_describe(self, topic_name: str) -> Optional[model.TopicInfo]:
-        topics = self._admin_client.describe_topics([topic_name])
+        topics = self._get_client().describe_topics([topic_name])
         for topic in topics:
             if topic["topic"] == topic_name:
                 partitions = len(topic["partitions"])
@@ -49,8 +57,8 @@ class AdminClientImpl(AdminClient):
         return None
 
     def topic_drop(self, topic_name: str) -> None:
-        self._admin_client.delete_topics([topic_name])
+        self._get_client().delete_topics([topic_name])
 
     def topics_list(self) -> List[str]:
-        topics = self._admin_client.describe_topics()
+        topics = self._get_client().describe_topics()
         return [topic['topic'] for topic in topics if not topic["is_internal"]]

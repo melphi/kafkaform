@@ -46,6 +46,15 @@ class BaseConnectResolver(component.Resolver):
                 schema_name=None)
         return None
 
+    def equals(self, current: model.SpecItem, target: model.SpecItem) -> bool:
+        target_params = model.ConnectParams(**target.params)
+        current_params = model.ConnectParams(**current.params)
+        for key, value in target_params.config.items():
+            if key not in current_params.config or current_params.config[key] != str(value):
+                return False
+        return current.name.lower() == target.name.lower() \
+            and current.resource_type == target.resource_type
+
     def _is_type(self, info: model.ConnectorInfo, connector_type: str) -> bool:
         connector_class = info.config["connector.class"]
         if model.RESOURCE_SOURCE in connector_class.lower() \
@@ -83,3 +92,8 @@ class ConnectorClassResolver(component.Resolver):
                                   params={},
                                   schema_name=None)
         return None
+
+    def equals(self, current: model.SpecItem, target: model.SpecItem) -> bool:
+        return current.resource_type == target.resource_type \
+               and current.name.lower() == target.name.lower() \
+               and current.params == target.params

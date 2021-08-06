@@ -9,14 +9,14 @@ class TopicResolver(component.Resolver):
         self._admin_client = admin_client
 
     def equals(self, current: model.SpecItem, target: model.SpecItem) -> bool:
-        assert current.resource_type == target.resource_type, \
-            f"Can not compare resource type [{current.resource_type}] with [{current.resource_type}]"
+        if current.resource_type != target.resource_type:
+            return False
         current_params = model.TopicParams(**current.params)
         target_params = model.TopicParams(**target.params)
         if target_params.replicas and target_params.replicas != current_params.replicas \
                 or target_params.partitions and target_params.partitions != current_params.partitions:
             return False
-        return current.name == target.name
+        return current.name.lower() == target.name.lower()
 
     def describe(self, target: model.SpecItem) -> model.Description:
         return model.Description(depends=[], schema=None, spec=target)

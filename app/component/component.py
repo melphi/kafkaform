@@ -16,6 +16,13 @@ class Parser:
     def parse(self, block: dict) -> List[model.SpecItem]:
         raise NotImplementedError()
 
+    def as_entry(self, spec: model.SpecItem) -> dict:
+        entry = {"name": spec.name}
+        entry.update(spec.params)
+        if spec.schema_name:
+            entry["schema_name"] = spec.schema_name
+        return entry
+
 
 class Resolver:
     """Resolves resources current state"""
@@ -24,9 +31,7 @@ class Resolver:
         raise NotImplementedError()
 
     def equals(self, current: model.SpecItem, target: model.SpecItem) -> bool:
-        assert current.resource_type == target.resource_type, \
-            f"Can not compare resource type [{current.resource_type}] with [{current.resource_type}]"
-        return current.name == target.name and current.params == target.params
+        raise NotImplementedError()
 
     def system_list(self) -> List[str]:
         raise NotImplementedError()

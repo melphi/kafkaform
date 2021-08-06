@@ -10,6 +10,11 @@ class BaseStreamResolver(component.Resolver):
         self._ksql_client = ksql_client
         self._sys_udf: Dict[str, model.UdfInfo] = {}
 
+    def equals(self, current: model.SpecItem, target: model.SpecItem) -> bool:
+        return current.resource_type == target.resource_type \
+               and current.name.lower() == target.name.lower() \
+               and current.params == target.params
+
     def describe(self, target: model.SpecItem) -> model.Description:
         params = model.StreamParams(**target.params)
         depends = self._get_dependencies(params.sql)

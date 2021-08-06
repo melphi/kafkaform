@@ -58,10 +58,11 @@ class Parser:
         for spec in data.specs:
             parser = self._parsers_by_type.get(spec.resource_type)
             if parser:
+                entry = parser.as_entry(spec)
                 if parser.tag_name() in values:
-                    values[parser.tag_name()].append(dataclasses.asdict(spec))
+                    values[parser.tag_name()].append(entry)
                 else:
-                    values[parser.tag_name()] = [dataclasses.asdict(spec)]
+                    values[parser.tag_name()] = [entry]
         yaml.safe_dump(values, target)
 
     def _merge_docs(self, docs: Iterator[dict]) -> dict:

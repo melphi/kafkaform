@@ -23,7 +23,7 @@ class TestKafkaApplyCommand(unittest.TestCase):
             delta = cmd.run()
 
         # Then
-        self.assertIsNotNone(delta)
+        self.assertTrue(delta)
         self.assertTrue(delta.items)
 
     def test_apply_idempotent(self):
@@ -43,6 +43,6 @@ class TestKafkaApplyCommand(unittest.TestCase):
             delta_2 = cmd.run()
 
         # Then
-        self.assertNotEqual(delta_1, delta_2)
-        self.assertTrue(delta_2)
+        self.assertTrue(delta_1.items)
         self.assertFalse(delta_2.items)
+        self.assertNotEqual(delta_1, delta_2)

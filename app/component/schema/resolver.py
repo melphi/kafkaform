@@ -19,3 +19,8 @@ class SchemaResolver(component.Resolver):
     def system_get(self, name: str) -> Optional[model.SpecItem]:
         # TODO: Load schema from Informatica EDC.
         return None
+
+    def equals(self, current: model.SpecItem, target: model.SpecItem) -> bool:
+        return current.resource_type == target.resource_type \
+               and current.name.lower() == target.name.lower() \
+               and current.params == target.params
