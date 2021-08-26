@@ -11,9 +11,23 @@ class BaseStreamResolver(component.Resolver):
         self._sys_udf: Dict[str, model.UdfInfo] = {}
 
     def equals(self, current: model.SpecItem, target: model.SpecItem) -> bool:
-        return current.resource_type == target.resource_type \
-               and current.name.lower() == target.name.lower() \
-               and current.params == target.params
+        if current.resource_type != target.resource_type \
+                or current.name.lower() != target.name.lower():
+            return False
+        for key, val in target.params.items():
+            if key == 'sql':
+                current_sql = current.params['sql'].strip().upper()
+                if current_sql.endswith(";"):
+                    current_sql = current_sql[:-1]
+                target_sql = val.strip().upper()
+                if target_sql.endswith(";"):
+                    target_sql = target_sql[:-1]
+                if current_sql != target_sql:
+                    return False
+            else:
+                if key not in current.params or current.params[key] != val:
+                    return False
+        return True
 
     def describe(self, target: model.SpecItem) -> model.Description:
         params = model.StreamParams(**target.params)

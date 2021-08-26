@@ -8,3 +8,11 @@ sources:
       kafka.topic: "raw__source__gdp__user__v1"
       value.converter": "io.confluent.connect.avro.AvroConverter"
       value.converter.schema.registry.url: "http://connect:8083"
+
+  - name: "raw__source__gdp__click__v1"
+    config:
+      {{ source.source_datagen_base() }}
+      quickstart: "users"
+      kafka.topic: "raw__source__gdp__click__v1"
+      value.converter": "io.confluent.connect.avro.AvroConverter"
+      value.converter.schema.registry.url: "http://connect:8083"

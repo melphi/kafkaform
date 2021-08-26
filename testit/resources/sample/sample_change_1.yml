@@ -1,0 +1,29 @@
+sources:
+  - name: "raw__source__gdp__user__v1"
+    config:
+      connector.class: "io.confluent.kafka.connect.datagen.DatagenConnector"
+      key.converter: "org.apache.kafka.connect.storage.StringConverter"
+      max.interval: 1000
+      quickstart: "users"
+      kafka.topic: "raw__source__gdp__user__v1"
+      value.converter": "io.confluent.connect.avro.AvroConverter"
+      value.converter.schema.registry.url: "http://connect:8083"
+
+  - name: "raw__source__gdp__click__v1"
+    config:
+      connector.class: "io.confluent.kafka.connect.datagen.DatagenConnector"
+      key.converter: "org.apache.kafka.connect.storage.StringConverter"
+      max.interval: 1000
+      quickstart: "users"
+      kafka.topic: "raw__source__gdp__click__v1"
+      value.converter": "io.confluent.connect.avro.AvroConverter"
+      value.converter.schema.registry.url: "http://connect:8083"
+streams:
+  - name: "refined__stream__gdp__user__v1"
+    sql: "CREATE STREAM refined__stream__gdp__user__v1 (userid VARCHAR KEY, regionid VARCHAR)
+          WITH (KAFKA_TOPIC='raw__source__gdp__user__v1', PARTITIONS=2, REPLICAS=1, VALUE_FORMAT='AVRO');"
+
+topics:
+  - name: raw__topic__gdp__user__v1
+    partitions: 3
+    replicas: 1

@@ -112,7 +112,7 @@ class Resolver:
         # System can have multiple items with the same name but different types.
         current_map: Dict[str, List[model.SpecItem]] = {}
         for spec in current.specs:
-            if spec.name in current_map:
+            if spec.name.lower() in current_map:
                 current_map[spec.name.lower()].append(spec)
             else:
                 current_map[spec.name.lower()] = [spec]
@@ -137,6 +137,7 @@ class Resolver:
                         break
             if not found:
                 self._LOG.info(f"{target_spec.resource_type} [{target_spec.name}] is new")
+
                 delta.items.append(model.DeltaItem(
                     deleted=False,
                     resource_type=target_spec.resource_type,

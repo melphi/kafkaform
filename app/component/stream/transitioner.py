@@ -1,4 +1,5 @@
 import logging
+import time
 
 from app import model, client
 from app.component import component
@@ -47,6 +48,7 @@ class BaseStreamTransitioner(component.Transitioner):
             self._ksql_client.table_drop(spec.name)
         else:
             raise ValueError(f"Unsupported resource type [{self._resource_type}]")
+        self._wait_for_dropped(spec.name)
 
     def _get_sql(self, delta: model.DeltaItem) -> str:
         if self._resource_type == model.RESOURCE_STREAM:
@@ -54,6 +56,13 @@ class BaseStreamTransitioner(component.Transitioner):
         elif self._resource_type == model.RESOURCE_TABLE:
             return model.TableParams(**delta.target.params).sql
         raise ValueError(f"Unsupported resource type [{self._resource_type}]")
+
+    def _wait_for_dropped(self, resource_name: str) -> None:
+        for i in range(5):
+            if not self._ksql_client.resource_describe(resource_name):
+                return
+            time.sleep(0.2 * i)
+        raise ValueError(f"Resource [{resource_name}] not deleted within the timeout")
 
 
 class StreamTransitioner(BaseStreamTransitioner):
