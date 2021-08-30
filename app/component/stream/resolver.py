@@ -29,15 +29,6 @@ class BaseStreamResolver(component.Resolver):
                     return False
         return True
 
-    def _normalize(self, text: str) -> str:
-        if text is None:
-            return ''
-        return (text.replace('\n', ' ')
-                .replace('\t', ' ')
-                .replace(' ', '')
-                .strip()
-                .upper())
-
     def describe(self, target: model.SpecItem) -> model.Description:
         params = model.StreamParams(**target.params)
         depends = self._get_dependencies(params.sql)
@@ -52,6 +43,15 @@ class BaseStreamResolver(component.Resolver):
 
     def system_get(self, name: str) -> Optional[model.SpecItem]:
         raise NotImplementedError()
+
+    def _normalize(self, text: str) -> str:
+        if text is None:
+            return ''
+        return (text.replace('\n', ' ')
+                .replace('\t', ' ')
+                .replace(' ', '')
+                .strip()
+                .upper())
 
     def _get_dependencies(self, sql: str) -> List[model.Dependency]:
         # TODO: Return udf and table_or_stream dependencies
