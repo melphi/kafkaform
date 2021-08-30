@@ -47,6 +47,7 @@ class BaseStreamResolver(component.Resolver):
     def _normalize(self, text: str) -> str:
         if text is None:
             return ''
+        # TODO: Empty spaces ' ' should not be removed to '' within strings constants.
         return (text.replace('\n', ' ')
                 .replace('\t', ' ')
                 .replace(' ', '')
