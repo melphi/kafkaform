@@ -16,10 +16,10 @@ class BaseStreamResolver(component.Resolver):
             return False
         for key, val in target.params.items():
             if key == 'sql':
-                current_sql = current.params['sql'].strip().upper()
+                current_sql = self._normalize(current.params['sql'])
                 if current_sql.endswith(";"):
                     current_sql = current_sql[:-1]
-                target_sql = val.strip().upper()
+                target_sql = self._normalize(val)
                 if target_sql.endswith(";"):
                     target_sql = target_sql[:-1]
                 if current_sql != target_sql:
@@ -28,6 +28,15 @@ class BaseStreamResolver(component.Resolver):
                 if key not in current.params or current.params[key] != val:
                     return False
         return True
+
+    def _normalize(self, text: str) -> str:
+        if text is None:
+            return ''
+        return (text.replace('\n', ' ')
+                .replace('\t', ' ')
+                .replace(' ', '')
+                .strip()
+                .upper())
 
     def describe(self, target: model.SpecItem) -> model.Description:
         params = model.StreamParams(**target.params)
