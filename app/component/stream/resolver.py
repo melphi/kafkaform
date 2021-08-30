@@ -17,11 +17,7 @@ class BaseStreamResolver(component.Resolver):
         for key, val in target.params.items():
             if key == 'sql':
                 current_sql = self._normalize(current.params['sql'])
-                if current_sql.endswith(";"):
-                    current_sql = current_sql[:-1]
                 target_sql = self._normalize(val)
-                if target_sql.endswith(";"):
-                    target_sql = target_sql[:-1]
                 if current_sql != target_sql:
                     return False
             else:
@@ -47,12 +43,15 @@ class BaseStreamResolver(component.Resolver):
     def _normalize(self, text: str) -> str:
         if text is None:
             return ''
-        # TODO: Empty spaces ' ' should not be removed to '' within strings constants.
-        return (text.replace('\n', ' ')
+        # TODO: Empty spaces ' ' should not be replaced with '' within strings constants.
+        norm = (text.replace('\n', ' ')
                 .replace('\t', ' ')
                 .replace(' ', '')
                 .strip()
                 .upper())
+        if norm.endswith(";"):
+            norm = norm[:-1]
+        return norm
 
     def _get_dependencies(self, sql: str) -> List[model.Dependency]:
         # TODO: Return udf and table_or_stream dependencies
