@@ -1,4 +1,5 @@
 import dataclasses
+import re
 from typing import Dict, List, Optional
 
 from app.component import component
@@ -6,6 +7,8 @@ from app import model, client
 
 
 class BaseStreamResolver(component.Resolver):
+    _REGEX_WITH = re.compile(r"WITH\s*\((.*)\)")
+
     def __init__(self, *, ksql_client: client.KsqlClient):
         self._ksql_client = ksql_client
         self._sys_udf: Dict[str, model.UdfInfo] = {}
@@ -41,9 +44,9 @@ class BaseStreamResolver(component.Resolver):
         raise NotImplementedError()
 
     def _normalize(self, text: str) -> str:
+        # TODO: Empty spaces ' ' should not be replaced with '' within strings constants.
         if text is None:
             return ''
-        # TODO: Empty spaces ' ' should not be replaced with '' within strings constants.
         norm = (text.replace('\n', ' ')
                 .replace('\t', ' ')
                 .replace(' ', '')
@@ -51,7 +54,22 @@ class BaseStreamResolver(component.Resolver):
                 .upper())
         if norm.endswith(";"):
             norm = norm[:-1]
-        return norm
+        return self._normalize_with(norm)
+
+    def _normalize_with(self, sql: str) -> str:
+        # TODO: Consider the case of nested parenthesis.
+        res = sql
+        found = self._REGEX_WITH.search(res)
+        if found:
+            start = found.span(1)[0]
+            end = found.span(1)[1]
+            if end > start:
+                block = res[start:end].replace(" ", "")
+                parts = block.split(",")
+                parts.sort()
+                block = ",".join(parts)
+                res = res[:start] + block + res[end:]
+        return res
 
     def _get_dependencies(self, sql: str) -> List[model.Dependency]:
         # TODO: Return udf and table_or_stream dependencies

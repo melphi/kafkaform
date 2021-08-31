@@ -13,7 +13,9 @@ The tool allows to:
 - Make sure Python 3.8+ is installed
 - Install requirements with
   
-  ```pip3 install -r requirements.txt```
+  ```
+  pip3 install -r requirements.txt
+  ```
 
 # Usage
 
@@ -23,7 +25,9 @@ The tool allows to:
 
 #### Apply
 
-```./cmd.sh kafka:apply testit/resources/project/raw_de.yml```
+```
+./cmd.sh kafka:apply testit/resources/project/raw_de.yml
+```
 
 Apply command will update the resources in Kafka to match the resources required by the file. In the current implementation, <b>resources removed from the definition file will not be removed for Kafka</b>. 
 
@@ -31,7 +35,9 @@ This is to allow multiple projects to be deployed in kafka without requiring a c
 
 #### Plan
 
-```./cmd.sh kafka:plan testit/resources/project/raw_de.yml```
+```
+./cmd.sh kafka:plan testit/resources/project/raw_de.yml
+```
 
 Plan shows the actions which would be performed by the apply command, without actually performing any system update.
 
@@ -39,14 +45,26 @@ Plan shows the actions which would be performed by the apply command, without ac
 
 #### Dump
 
-```./cmd.sh kafka:dump yourfile.yml```
+```
+./cmd.sh kafka:dump yourfile.yml
+```
 
 The dump command imports all the existing Kafka resources in a definition file. The file can be then adapted, saving a lot of time compared to writing all the resources from scratch.
 
 # Debugging
 
+#### Sql
+
+```
+./cmd.sh kafka:sql "DESCRIBE EXTENDED KSQL_PROCESSING_LOG;"
+```
+
+SQL executes a Kafka KSQL command and shows the result.
+
 #### Debug
 
-```./cmd.sh config:debug testit/resources/project/raw_de.yml```
+```
+./cmd.sh config:debug testit/resources/project/raw_de.yml
+```
 
 This command will print the resulting resource definition, useful to evaluate the result of macros or debug syntax errors.  

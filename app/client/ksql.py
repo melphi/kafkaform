@@ -18,6 +18,9 @@ class KsqlException(Exception):
 class KsqlClient:
     """Mockable Kafka KSQL client"""
 
+    def execute_query(self, sql: str) -> List[Dict[str, any]]:
+        raise NotImplementedError()
+
     def execute_command(self, sql: str) -> None:
         raise NotImplementedError()
 
@@ -55,6 +58,9 @@ class KsqlClientImpl(KsqlClient):
     def __init__(self, *, ksql_url: str):
         self._ksql_url = ksql_url
         self._sql_builder = sqlbuilder.Builder()
+
+    def execute_query(self, sql: str) -> List[Dict[str, any]]:
+        return self._execute_sql_request(sql, {})
 
     def execute_command(self, sql: str) -> None:
         data = self._execute_sql_request(sql, {})

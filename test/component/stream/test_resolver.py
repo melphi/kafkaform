@@ -11,10 +11,10 @@ class TestStreamResolver(unittest.TestCase):
         current = model.SpecItem(name="test",
                                  resource_type=model.RESOURCE_STREAM,
                                  schema_name=None,
-                                 params={"sql": "CREATE STREAM refined__stream__gdp__user__v1 (userid VARCHAR KEY, "
+                                 params={"sql": "CREATE STREAM refined__stream__gdp__user__v1 ( userid VARCHAR KEY,\n"
                                                 "regionid VARCHAR) WITH (KAFKA_TOPIC=\'raw__source__gdp__user__v1\', "
-                                                "KEY_FORMAT=\'KAFKA\', PARTITIONS=2, REPLICAS=1, "
-                                                "VALUE_FORMAT=\'AVRO\')"})
+                                                "KEY_FORMAT=\'KAFKA\' , VALUE_FORMAT = \'AVRO\', PARTITIONS=2, "
+                                                "REPLICAS=1)"})
         target = model.SpecItem(name="test",
                                 resource_type=model.RESOURCE_STREAM,
                                 schema_name=None,

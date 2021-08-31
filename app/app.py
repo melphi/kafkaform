@@ -30,6 +30,11 @@ def run(argv: list, cfg: conf.Config) -> None:
             parser=dep.parser,
             resolver=dep.resolver,
             file_path=args.file_path).run()
+    elif args.cmd == command.KafkaSqlCommand.NAME:
+        sql = ' '.join(args.sql)  # Workaround for argparse.
+        command.KafkaSqlCommand(
+            ksql_client=dep.ksql_client,
+            sql=sql).run()
     else:
         raise ValueError(f"Unmapped command [{args.cmd}]")
 
@@ -48,9 +53,10 @@ def _parse_args(argv: list) -> any:
         help=command.KafkaApplyCommand.HELP)
     sys_apply.add_argument('file_path')
 
-    subparsers.add_parser(
-        command.KafkaDescribeCommand.NAME,
-        help=command.KafkaDescribeCommand.HELP)
+    sys_sql = subparsers.add_parser(
+        command.KafkaSqlCommand.NAME,
+        help=command.KafkaSqlCommand.HELP)
+    sys_sql.add_argument('sql', nargs='+')
 
     sys_dump = subparsers.add_parser(
         command.KafkaDumpCommand.NAME,

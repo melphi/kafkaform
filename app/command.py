@@ -1,6 +1,7 @@
 import logging
+import json
 
-from app import actioner, model
+from app import actioner, model, client
 
 
 class Command:
@@ -55,12 +56,23 @@ class KafkaApplyCommand(Command):
         return delta
 
 
-class KafkaDescribeCommand(Command):
-    NAME = "kafka:describe"
-    HELP = "Prints detailed resources information about the system"
+class KafkaSqlCommand(Command):
+    NAME = "kafka:sql"
+    HELP = "Runs SQL queries and prints the result"
+
+    _LOG = logging.getLogger(__name__)
+
+    def __init__(self, *,
+                 ksql_client: client.KsqlClient,
+                 sql: str):
+        self._ksql_client = ksql_client
+        self._sql = sql
 
     def run(self) -> None:
-        raise NotImplementedError()
+        res = self._ksql_client.execute_query(self._sql)
+        self._LOG.info(f"\nResults:\n\n")
+        for record in res:
+            self._LOG.info(f"{json.dumps(record, indent=2)}\n")
 
 
 class KafkaDumpCommand(Command):
@@ -84,8 +96,6 @@ class KafkaDumpCommand(Command):
 class KafkaPlanCommand(Command):
     NAME = "kafka:plan"
     HELP = "Shows the changes required"
-
-    _LOG = logging.getLogger(__name__)
 
     def __init__(self, *,
                  parser: actioner.Parser,

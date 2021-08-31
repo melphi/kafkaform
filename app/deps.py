@@ -10,7 +10,7 @@ class Dependencies:
     def __init__(self, cfg: conf.Config):
         self._admin_client = client.AdminClientImpl(bootstrap_servers=[cfg.kafka_bootstrap_server])
         self._connect_client = client.ConnectClientImpl(connect_url=cfg.kafka_connect_url)
-        self._ksql_client = client.KsqlClientImpl(ksql_url=cfg.kafka_ksql_url)
+        self.ksql_client = client.KsqlClientImpl(ksql_url=cfg.kafka_ksql_url)
 
         components = self._create_components()
 
@@ -27,7 +27,7 @@ class Dependencies:
         components = registered.build_all(
             admin_client=self._admin_client,
             connect_client=self._connect_client,
-            ksql_client=self._ksql_client)
+            ksql_client=self.ksql_client)
 
         names = [comp.resource_type for comp in components]
         assert len(components) == len(set(names)), \

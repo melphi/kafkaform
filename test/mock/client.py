@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from app import client, model
 
@@ -40,6 +40,9 @@ class MockConnectClient(client.ConnectClient):
 
 
 class MockKsqlClient(client.KsqlClient):
+    def execute_query(self, sql: str) -> List[Dict[str, any]]:
+        raise NotImplementedError()
+
     def execute_command(self, sql: str) -> None:
         raise NotImplementedError()
 
