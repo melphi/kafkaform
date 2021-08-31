@@ -56,25 +56,6 @@ class KafkaApplyCommand(Command):
         return delta
 
 
-class KafkaSqlCommand(Command):
-    NAME = "kafka:sql"
-    HELP = "Runs SQL queries and prints the result"
-
-    _LOG = logging.getLogger(__name__)
-
-    def __init__(self, *,
-                 ksql_client: client.KsqlClient,
-                 sql: str):
-        self._ksql_client = ksql_client
-        self._sql = sql
-
-    def run(self) -> None:
-        res = self._ksql_client.execute_query(self._sql)
-        self._LOG.info(f"\nResults:\n\n")
-        for record in res:
-            self._LOG.info(f"{json.dumps(record, indent=2)}\n")
-
-
 class KafkaDumpCommand(Command):
     NAME = "kafka:dump"
     HELP = "Dumps the current state of the system to file"
@@ -93,6 +74,28 @@ class KafkaDumpCommand(Command):
             self._parser.save(data=data, target=target)
 
 
+class KafkaEraseCommand(Command):
+    NAME = "kafka:erase"
+    HELP = "Removes all resources listed in the configuration file from Kafka"
+
+    def __init__(self, *,
+                 parser: actioner.Parser,
+                 transitioner: actioner.Transitioner,
+                 file_path: str,
+                 ask_confirmation: bool = True):
+        self._parser = parser
+        self._transitioner = transitioner
+        self._file_path = file_path
+        self._ask_confirmation = ask_confirmation
+
+    def run(self) -> any:
+        target = self._parser.parse(self._file_path)
+        if target == model.EMPTY_SPEC:
+            raise ValueError("Parsed files do not contain any resource")
+        self._transitioner.erase(target, self._ask_confirmation)
+        return target
+
+
 class KafkaPlanCommand(Command):
     NAME = "kafka:plan"
     HELP = "Shows the changes required"
@@ -108,3 +111,22 @@ class KafkaPlanCommand(Command):
     def run(self) -> model.Delta:
         target = self._parser.parse(self._file_path)
         return self._resolver.load_checked_delta(target)
+
+
+class KafkaSqlCommand(Command):
+    NAME = "kafka:sql"
+    HELP = "Runs SQL queries and prints the result"
+
+    _LOG = logging.getLogger(__name__)
+
+    def __init__(self, *,
+                 ksql_client: client.KsqlClient,
+                 sql: str):
+        self._ksql_client = ksql_client
+        self._sql = sql
+
+    def run(self) -> None:
+        res = self._ksql_client.execute_query(self._sql)
+        self._LOG.info(f"\nResults:\n\n")
+        for record in res:
+            self._LOG.info(f"{json.dumps(record, indent=2)}\n")

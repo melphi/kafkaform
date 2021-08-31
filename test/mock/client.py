@@ -46,6 +46,9 @@ class MockKsqlClient(client.KsqlClient):
     def execute_command(self, sql: str) -> None:
         raise NotImplementedError()
 
+    def query_terminate(self, name: str) -> None:
+        raise NotImplementedError()
+
     def resource_describe(self, name: str) -> Optional[model.ResourceInfo]:
         raise NotImplementedError()
 

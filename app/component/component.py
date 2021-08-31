@@ -46,6 +46,9 @@ class Transitioner:
     def apply(self, delta: model.DeltaItem) -> None:
         raise NotImplementedError()
 
+    def drop(self, spec: model.SpecItem, *, cascade: bool = False) -> None:
+        raise NotImplementedError()
+
     def validate(self, delta: model.DeltaItem) -> None:
         raise NotImplementedError()
 

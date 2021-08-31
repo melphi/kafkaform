@@ -41,6 +41,14 @@ This is to allow multiple projects to be deployed in kafka without requiring a c
 
 Plan shows the actions which would be performed by the apply command, without actually performing any system update.
 
+#### Erase
+
+```
+./cmd.sh kafka:erase testit/resources/project/raw_de.yml
+```
+
+<b>Warning:</b> Erase removes all listed resources from kafka along with all dependencies.
+
 # Import existing resources
 
 #### Dump

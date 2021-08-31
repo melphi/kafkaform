@@ -11,6 +11,10 @@ class BaseConnectTransitioner(component.Transitioner):
         self._connect_client = connect_client
         self._connector_type = connector_type
 
+    def drop(self, spec: model.SpecItem, *, cascade: bool = False) -> None:
+        if self._connect_client.connector_get(spec.name):
+            self._connect_client.connector_delete(spec.name)
+
     def apply(self, delta: model.DeltaItem) -> None:
         if delta.deleted:
             try:

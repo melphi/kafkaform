@@ -25,6 +25,11 @@ def run(argv: list, cfg: conf.Config) -> None:
             parser=dep.parser,
             resolver=dep.resolver,
             dest_path=args.dest_path).run()
+    elif args.cmd == command.KafkaEraseCommand.NAME:
+        command.KafkaEraseCommand(
+            parser=dep.parser,
+            transitioner=dep.transitioner,
+            file_path=args.file_path).run()
     elif args.cmd == command.KafkaPlanCommand.NAME:
         command.KafkaPlanCommand(
             parser=dep.parser,
@@ -53,10 +58,10 @@ def _parse_args(argv: list) -> any:
         help=command.KafkaApplyCommand.HELP)
     sys_apply.add_argument('file_path')
 
-    sys_sql = subparsers.add_parser(
-        command.KafkaSqlCommand.NAME,
-        help=command.KafkaSqlCommand.HELP)
-    sys_sql.add_argument('sql', nargs='+')
+    sys_erase = subparsers.add_parser(
+        command.KafkaEraseCommand.NAME,
+        help=command.KafkaEraseCommand.HELP)
+    sys_erase.add_argument('file_path')
 
     sys_dump = subparsers.add_parser(
         command.KafkaDumpCommand.NAME,
@@ -67,6 +72,11 @@ def _parse_args(argv: list) -> any:
         command.KafkaPlanCommand.NAME,
         help=command.KafkaPlanCommand.HELP)
     sys_plan.add_argument('file_path')
+
+    sys_sql = subparsers.add_parser(
+        command.KafkaSqlCommand.NAME,
+        help=command.KafkaSqlCommand.HELP)
+    sys_sql.add_argument('sql', nargs='+')
 
     return parser.parse_args(argv)
 

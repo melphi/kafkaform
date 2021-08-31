@@ -11,6 +11,10 @@ class TopicTransitioner(component.Transitioner):
     def __init__(self, *, admin_client: client.AdminClient):
         self._admin_client = admin_client
 
+    def drop(self, spec: model.SpecItem, *, cascade: bool = False) -> None:
+        if self._admin_client.topic_describe(spec.name):
+            self._admin_client.topic_drop(spec.name)
+
     def apply(self, delta: model.DeltaItem) -> None:
         if delta.deleted:
             try:

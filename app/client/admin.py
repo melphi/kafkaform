@@ -50,10 +50,11 @@ class AdminClientImpl(AdminClient):
         for topic in topics:
             if topic["topic"] == topic_name:
                 partitions = len(topic["partitions"])
-                replicas = len(topic["partitions"][0]["replicas"])
-                return model.TopicInfo(name=topic_name,
-                                       partitions=partitions,
-                                       replicas=replicas)
+                if partitions > 0:  # Deleted topics can appear with 0 partitions.
+                    replicas = len(topic["partitions"][0]["replicas"])
+                    return model.TopicInfo(name=topic_name,
+                                           partitions=partitions,
+                                           replicas=replicas)
         return None
 
     def topic_drop(self, topic_name: str) -> None:

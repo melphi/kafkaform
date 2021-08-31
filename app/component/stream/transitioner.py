@@ -12,6 +12,24 @@ class BaseStreamTransitioner(component.Transitioner):
         self._ksql_client = ksql_client
         self._resource_type = resource_type
 
+    def drop(self, spec: model.SpecItem, *, cascade: bool = False) -> None:
+        info = self._ksql_client.resource_describe(spec.name)
+        if info:
+            for dependency in info.dependencies:
+                if dependency.resource_type == model.RESOURCE_QUERY:
+                    self._ksql_client.query_terminate(dependency.name)
+                else:
+                    raise ValueError(f"Drop operation does not support dependency type [{dependency.resource_type}]")
+            try:
+                if info.resource_type == model.RESOURCE_STREAM:
+                    self._ksql_client.stream_drop(info.name)
+                elif info.resource_type == model.RESOURCE_TABLE:
+                    self._ksql_client.table_drop(info.name)
+                else:
+                    raise ValueError(f"Drop operation does not support resource type [{spec.resource_type}]")
+            except Exception as e:
+                raise e
+
     def apply(self, delta: model.DeltaItem) -> None:
         if delta.deleted:
             try:

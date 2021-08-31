@@ -24,6 +24,9 @@ class KsqlClient:
     def execute_command(self, sql: str) -> None:
         raise NotImplementedError()
 
+    def query_terminate(self, name: str) -> None:
+        raise NotImplementedError()
+
     def resource_describe(self, name: str) -> Optional[model.ResourceInfo]:
         raise NotImplementedError()
 
@@ -68,6 +71,9 @@ class KsqlClientImpl(KsqlClient):
         assert result.get("commandStatus") and result["commandStatus"].get("status") == self._STATE_SUCCESS, \
             f"Unexpected KSQL command response [{str(result)}]"
 
+    def query_terminate(self, query_name: str) -> None:
+        self._execute_sql_request("TERMINATE {{ name }};", {"name": query_name})
+
     def syntax_check(self, sql: str) -> None:
         query = f"EXPLAIN {sql}"
         try:
@@ -78,11 +84,28 @@ class KsqlClientImpl(KsqlClient):
 
     def resource_describe(self, name: str) -> Optional[model.ResourceInfo]:
         try:
-            data = self._execute_sql_request("DESCRIBE {{ name }};", {"name": name})
+            data = self._execute_sql_request("DESCRIBE EXTENDED {{ name }};", {"name": name})
             item = self._get_only_record(data)
+            if item["sourceDescription"]["type"] == "STREAM":
+                resource_type = model.RESOURCE_STREAM
+            elif item["sourceDescription"]["type"] == "TABLE":
+                resource_type = model.RESOURCE_TABLE
+            else:
+                raise ValueError(f"Unrecognised resource type [{item['sourceDescription']['type']}]")
+            dependencies = []
+            for query in item["sourceDescription"]["readQueries"]:
+                dependencies.append(model.Dependency(
+                    name=query["id"],
+                    resource_type=model.RESOURCE_QUERY))
+            for query in item["sourceDescription"]["writeQueries"]:
+                dependencies.append(model.Dependency(
+                    name=query["id"],
+                    resource_type=model.RESOURCE_QUERY))
             return model.ResourceInfo(
                 name=item["sourceDescription"]["name"],
-                sql=item["sourceDescription"]["statement"])
+                sql=item["sourceDescription"]["statement"],
+                resource_type=resource_type,
+                dependencies=dependencies)
         except KsqlException as e:
             if self._NOT_FOUND_PREFIX in e.msg:
                 return None

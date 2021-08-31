@@ -3,6 +3,12 @@ from dataclasses import dataclass
 
 
 @dataclass
+class Dependency:
+    name: str
+    resource_type: str
+
+
+@dataclass
 class ConnectorInfo:
     name: str
     config: Dict[str, str]
@@ -13,6 +19,8 @@ class ConnectorInfo:
 class ResourceInfo:
     name: str
     sql: str
+    resource_type: str
+    dependencies: List[Dependency]
 
 
 @dataclass
