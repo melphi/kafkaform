@@ -7,7 +7,7 @@ from app import model, client
 
 
 class BaseStreamResolver(component.Resolver):
-    _REGEX_WITH = re.compile(r"WITH\s*\((.*)\)")
+    _REGEX_WITH = re.compile(r"WITH\s*\(([^)]*)\)")
 
     def __init__(self, *, ksql_client: client.KsqlClient):
         self._ksql_client = ksql_client
