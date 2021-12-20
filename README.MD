@@ -1,6 +1,6 @@
 # Preface
 
-Kafkaform is a [Terraform](https://www.terraform.io) like tool for Apache Kafka. It works for Kafka KSQL 5.x only, however the tool was handy in a couple of Kafka related projects and I want to share it. The tool allows to: 
+Kafkaform is a [Terraform](https://www.terraform.io) like tool for Apache Kafka. It works for Kafka KSQL 5.x only, however the tool was handy in a couple of Kafka related projects and I wanted to share it. The tool allows to: 
 
 - Define the resources which need to be deployed in kafka (connectors, streams, tables, etc) with customizable and reusable templates, by using Jinja2 templating engine.
 - Deploy the resources in Kafka. Deployment is idempotent and several precondition checks can be made (eg schema, naming convention, dependencies, etc). This makes straightforward to deploy resources iteratively and migrate pipelines between environments.
