@@ -1,3 +1,7 @@
+# Supported Kafka versions
+
+Works for Kafka KSQ 5.x. KSQL 6 and above are NOT supported.
+
 # Preface
 
 This application follows similar concepts of popular devops tools like [Terraform](https://www.terraform.io) or [Ansible](https://www.ansible.com), but specific for Kafka pipelines. 
