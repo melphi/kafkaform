@@ -53,8 +53,7 @@ class TestStreamResolver(unittest.TestCase):
 
         # Then
         self.assertTrue(equals)    
-        
-    
+
     @unittest.skip("Version 6.2 not yet supported.")
     def test_equals_62(self):
         # Given
