@@ -1,15 +1,11 @@
-# Supported Kafka versions
-
-Works for Kafka KSQ 5.x. KSQL 6 and above are NOT supported.
-
 # Preface
 
-This application follows similar concepts of popular devops tools like [Terraform](https://www.terraform.io) or [Ansible](https://www.ansible.com), but specific for Kafka pipelines. 
-
-The tool allows to: 
+Kafkaform is a [Terraform](https://www.terraform.io) like tool for Apache Kafka. The tool allows to: 
 
 - Define the resources which need to be deployed in kafka (connectors, streams, tables, etc) with customizable and reusable templates, by using Jinja2 templating engine.
 - Deploy the resources in Kafka. Deployment is idempotent and several precondition checks can be made (eg schema, naming convention, dependencies, etc). This makes straightforward to deploy resources iteratively and migrate pipelines between environments.
+
+Works for Kafka KSQ 5.x, Kafka KSQL 6 and above are **NOT** supported.
 
 # Installation
 
